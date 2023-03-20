@@ -30,9 +30,8 @@
 //*****************************************************************************
 #define BUF_SIZE 10
 #define SAMPLE_RATE_HZ 60
-
-//#define TOP_HEIGHT 1225
-//#define BOTTOM_HEIGHT 2265
+#define CLK_SPEED 100000000
+#define PRESCALER 16000
 #define Range 1030
 
 //*****************************************************************************
@@ -172,8 +171,6 @@ UpdateDisplay(uint32_t meanVal, uint32_t startingVal, uint32_t count, int16_t pe
         usnprintf (string, sizeof(string), "%6d", percentageVal);
         // Update line on display.
         OLEDStringDraw (string, 0, 1);
-        ClearDisplayLine(2);
-        ClearDisplayLine(3);
 
         break;
     case MEAN:
@@ -182,15 +179,10 @@ UpdateDisplay(uint32_t meanVal, uint32_t startingVal, uint32_t count, int16_t pe
         usnprintf (string, sizeof(string), "%6d", meanVal);
         OLEDStringDraw (string, 1, 1);
 
-        ClearDisplayLine(2);
-        ClearDisplayLine(3);
-
         break;
     case OFF:
         ClearDisplayLine(0);
         ClearDisplayLine(1);
-        ClearDisplayLine(2);
-        ClearDisplayLine(3);
         break;
     }
 }
@@ -222,7 +214,7 @@ main(void)
     int16_t percentageVal;
     uint8_t butState;
     uint32_t startingVal;
-    uint32_t display_delay = 100000000 / 16000; // how often display is updated.
+    uint32_t display_delay = CLK_SPEED / PRESCALER; // how often display is updated.
     uint32_t display_timer = 0;
 
 
@@ -245,6 +237,9 @@ main(void)
 
     startingVal = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
 
+    ClearDisplayLine(2);
+    ClearDisplayLine(3);
+
     while (1)
     {
         //
@@ -256,18 +251,6 @@ main(void)
 
         // Calculate and display the rounded mean of the buffer contents
         meanVal = (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;
-
-        // int16_t topRange = startingVal - TOP_HEIGHT;
-        // int16_t botRange = BOTTOM_HEIGHT - startingVal;
-
-//        if (startingVal >= meanVal)
-//        {
-//            percentageVal =  (100 * (int16_t)(startingVal - meanVal)) / topRange; // (100 * (startingVal - meanVal)) / startingVal;
-//        }
-//        else
-//        {
-//            percentageVal = - (100 * (int16_t)(meanVal - startingVal)) / botRange; // - (int16_t)((100 * (meanVal - startingVal)) / meanVal);
-//        }
 
         if (startingVal >= meanVal)
         {
