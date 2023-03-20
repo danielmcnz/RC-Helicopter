@@ -172,12 +172,8 @@ UpdateDisplay(uint32_t meanVal, uint32_t startingVal, uint32_t count, int16_t pe
         usnprintf (string, sizeof(string), "%6d", percentageVal);
         // Update line on display.
         OLEDStringDraw (string, 0, 1);
-
-        usnprintf (string, sizeof(string), "%6d", meanVal);
-        OLEDStringDraw (string, 0, 2);
-
-        usnprintf (string, sizeof(string), "%6d", startingVal);
-        OLEDStringDraw (string, 0, 3);
+        ClearDisplayLine(2);
+        ClearDisplayLine(3);
 
         break;
     case MEAN:
@@ -186,9 +182,7 @@ UpdateDisplay(uint32_t meanVal, uint32_t startingVal, uint32_t count, int16_t pe
         usnprintf (string, sizeof(string), "%6d", meanVal);
         OLEDStringDraw (string, 1, 1);
 
-        usnprintf (string, sizeof(string), "%6d", startingVal);
-        OLEDStringDraw (string, 0, 2);
-
+        ClearDisplayLine(2);
         ClearDisplayLine(3);
 
         break;
