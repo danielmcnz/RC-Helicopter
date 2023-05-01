@@ -314,7 +314,7 @@ main(void)
             percentageVal = - (100 * (int16_t)(meanVal - startingVal)) / Range; // - (int16_t)((100 * (meanVal - startingVal)) / meanVal);
         }
 
-        yawDeg = (yaw * 360) / 224;
+        yawDeg = (yaw * 360) / 448;
 
         UpdateInput(&butState, &startingVal, meanVal);
 
