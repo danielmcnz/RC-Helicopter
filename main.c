@@ -151,7 +151,7 @@ UpdateDisplay(uint32_t meanVal, uint32_t startingVal, uint32_t count, int16_t pe
             percentageVal = - (100 * (int16_t)(meanVal - startingVal)) / Range; // - (int16_t)((100 * (meanVal - startingVal)) / meanVal);
         }
 
-        yawDeg = (yaw * 360) / 224;
+        yawDeg = (yaw * 360) / 448;
 
         UpdateInput(&butState, &startingVal, meanVal);
 
