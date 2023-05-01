@@ -31,7 +31,7 @@
 #define BUF_SIZE 10
 #define SAMPLE_RATE_HZ 60
 
-#define Range 1030
+#define Range 1000
 
 //*****************************************************************************
 // Global variables
@@ -94,16 +94,16 @@ YawIntHandler(void)
     switch(prevState)
     {
     case 0:
-        signalAB == 1 ? yaw-- : yaw++;
+        signalAB == 1 ? yaw++ : yaw--;
         break;
     case 1:
-        signalAB == 3 ? yaw-- : yaw++;
+        signalAB == 3 ? yaw++ : yaw--;
         break;
     case 2:
-        signalAB == 0 ? yaw-- : yaw++;
+        signalAB == 0 ? yaw++ : yaw--;
         break;
     case 3:
-        signalAB == 2 ? yaw-- : yaw++  ;
+        signalAB == 2 ? yaw++ : yaw--;
         break;
     case -1:
         break;
@@ -200,7 +200,7 @@ ClearDisplayLine(uint8_t line)
 }
 
 void
-UpdateDisplay(uint32_t meanVal, uint32_t startingVal, uint32_t count, int16_t percentageVal, uint32_t yawDeg)
+UpdateDisplay(uint32_t meanVal, uint32_t startingVal, uint32_t count, int16_t percentageVal, int32_t yawDeg)
 {
     char string[17];  // 16 characters across the display
     char string1[17];
@@ -217,7 +217,7 @@ UpdateDisplay(uint32_t meanVal, uint32_t startingVal, uint32_t count, int16_t pe
         // Update line on display.
         OLEDStringDraw (string, 0, 1);
 
-        OLEDStringDraw ("Yaw             ", 0, 2);
+        OLEDStringDraw ("Yaw (Deg)       ", 0, 2);
         OLEDStringDraw (string1, 0, 3);
 
         break;
@@ -269,7 +269,7 @@ main(void)
     uint32_t startingVal;
     uint32_t display_delay = 100000000 / 64000; // how often display is updated.
     uint32_t display_timer = 0;
-    uint32_t yawDeg;
+    int32_t yawDeg;
 
 
     initClock ();
@@ -314,7 +314,17 @@ main(void)
             percentageVal = - (100 * (int16_t)(meanVal - startingVal)) / Range; // - (int16_t)((100 * (meanVal - startingVal)) / meanVal);
         }
 
-        yawDeg = (yaw * 360) / 448;
+        yawDeg = ((yaw * 360) / 448) % 360;
+        // yawDegDec = (yaw * 8) % 360 % 10;
+
+        if((yawDeg > 180))
+        {
+            yawDeg = yawDeg - 360;
+        }
+        else if(yawDeg <= -180)
+        {
+            yawDeg = yawDeg + 360;
+        }
 
         UpdateInput(&butState, &startingVal, meanVal);
 
