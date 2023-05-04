@@ -13,10 +13,12 @@
 
 #include "yaw.h"
 
+#define CLK_FREQUENCY 100000000
+#define CLK_DELAY_DIVISOR 64000
+#define DISPLAY_DELAY CLK_FREQUENCY / CLK_DELAY_DIVISOR // delay between display updates
+#define MAX_DISPLAY_LEN 17
 
-#define DISPLAY_DELAY 100000000 / 64000 // MAKE THESE NON MAGIC VARIABLES
-
-enum DisplayState {PERCENTAGE = 0, MEAN, OFF};
+enum DisplayState {PERCENTAGE_SCREEN = 0, MEAN_SCREEN, OFF};
 
 void initDisplay(void);
 

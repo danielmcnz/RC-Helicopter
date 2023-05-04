@@ -22,14 +22,14 @@ void initDisplay(void)
 
 void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc, YawPosition yaw_pos)
 {
-    char string[17];  // 16 characters across the display
-    char string1[17];
+    char string[MAX_DISPLAY_LEN];  // 16 characters across the display
+    char string1[MAX_DISPLAY_LEN];
 
     _updateScreenState();
 
     switch(displayState)
     {
-    case PERCENTAGE:
+    case PERCENTAGE_SCREEN:
         OLEDStringDraw ("Percentage ADC  ", 0, 0);
 
         // Form a new string for the line.  The maximum width specified for the
@@ -43,7 +43,7 @@ void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc
         OLEDStringDraw (string1, 0, 3);
 
         break;
-    case MEAN:
+    case MEAN_SCREEN:
         OLEDStringDraw ("Mean ADC        ", 0, 0);
 
         usnprintf (string, sizeof(string), "%6d", mean_altitude);
@@ -78,7 +78,7 @@ void _updateScreenState(void)
     if(button_state == PUSHED)
     {
         displayState++;
-        if(displayState > 2)
+        if(displayState > MEAN_SCREEN)
             displayState = 0;
     }
 }
