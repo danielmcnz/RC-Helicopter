@@ -22,7 +22,6 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
-#include "OrbitOLED/OrbitOLEDInterface.h"
 
 #include "circBufT.h"
 #include "buttons4.h"
@@ -85,12 +84,12 @@ void initialize(void)
     initDisplay ();
     initButtons();
 
+    // set delay to fill circular buffer before reading initial values
     SysCtlDelay(10 * (SysCtlClockGet() / SAMPLE_RATE_HZ));
 
     initYaw();
     initAltitude();
 
-    //
     // Enable interrupts to the processor.
     IntMasterEnable();
 }
@@ -102,10 +101,12 @@ void update(void)
     updateYaw();
     updateAltitude();
 
+    // delay between each display update as not nessecary to update display every tick
     if(display_timer >= DISPLAY_DELAY)
     {
         updateDisplay(getMeanAltitude(), g_ulSampCnt, getAltitudePerc(), getYaw());
 
+        // resets the initial initial altitude when switching between display screens
         if(isLeftButtonPushed())
             setInitAltitude(getMeanAltitude());
 
