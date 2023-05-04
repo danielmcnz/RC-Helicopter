@@ -32,9 +32,6 @@ typedef enum QDStates = {
     HI_HI
 };
 
-static int16_t yaw;
-static YawPosition yaw_pos;
-
 void initYaw(void);
 
 void YawIntHandler(void);

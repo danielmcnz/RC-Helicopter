@@ -11,6 +11,9 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 
+static int16_t yaw;
+static YawPosition yaw_pos;
+
 void initYaw(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);

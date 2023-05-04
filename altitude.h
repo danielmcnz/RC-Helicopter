@@ -17,12 +17,6 @@
 #define ALTITUDE_VOLTAGE_RANGE 1000
 #define PERCENT 100
 
-static circBuf_t g_inBuffer; // Buffer of size BUF_SIZE integers (sample values)
-static int32_t buffer_sum; // sum of the values in the circular buffer
-static int32_t init_mean_altitude; // initial altitude value
-static uint32_t mean_altitude;
-static int16_t percentage_val;
-
 void _initADC(void);
 
 void initAltitude(void);

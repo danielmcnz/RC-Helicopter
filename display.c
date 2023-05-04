@@ -11,6 +11,9 @@
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
+static uint8_t displayState = 0;
+static bool left_button_pushed = false;
+
 void initDisplay(void)
 {
     // intialise the Orbit OLED display

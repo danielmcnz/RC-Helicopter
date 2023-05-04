@@ -18,9 +18,6 @@
 
 enum DisplayState {PERCENTAGE = 0, MEAN, OFF};
 
-static uint8_t displayState = 0;
-static bool left_button_pushed = false;
-
 void initDisplay(void);
 
 void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc, YawPosition yaw_pos);
