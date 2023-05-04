@@ -25,29 +25,38 @@ void initYaw(void)
 
 void YawIntHandler(void)
 {
-    static int prevState = -1;
+    static int prevState = INVALID;
 
     int signalAB = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
     switch(prevState)
     {
-    case 0:
-        signalAB == 1 ? yaw++ : yaw--;
+    case LO_LO:
+        signalAB == HI_LO ? yaw++ : yaw--;
         break;
-    case 1:
-        signalAB == 3 ? yaw++ : yaw--;
+    case HI_LO:
+        signalAB == HI_HI ? yaw++ : yaw--;
         break;
-    case 2:
-        signalAB == 0 ? yaw++ : yaw--;
+    case LO_HI:
+        signalAB == LO_LO ? yaw++ : yaw--;
         break;
-    case 3:
-        signalAB == 2 ? yaw++ : yaw--;
+    case HI_HI:
+        signalAB == LO_HI ? yaw++ : yaw--;
         break;
-    case -1:
+    case INVALID:
         break;
     };
 
     prevState = signalAB;
+
+    // ensures yaw value does not overflow integer type
+    if(yaw > N_STEPS)
+    {
+        yaw -= N_STEPS;
+    } else if(yaw < -N_STEPS)
+    {
+        yaw += N_STEPS;
+    }
 
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 }
@@ -55,17 +64,18 @@ void YawIntHandler(void)
 void updateYaw(void)
 {
     // convert yaw to a range between 0 to 360 degrees from gpio value
-    yaw_pos.degree = ((yaw * 360) / 448) % 360; // degree precision
-    yaw_pos.sub_degree = ((yaw * 8) % 360) % 10; // sub degree precision
+    yaw_pos.degree = ((yaw * FULL_ROTATION) / N_SLOTS) % FULL_ROTATION; // degree precision
+    // yaw_pos.sub_degree = ((yaw * 8) % FULL_ROTATION) % 10; // sub degree precision
+    yaw_pos.sub_degree = ((yaw * DECIMAL_PLACES) * (FULL_ROTATION / N_SLOTS)) % DECIMAL_PLACES; 
 
     // constrain yaw between -180 to 180 degrees
-    if((yaw_pos.degree > 180))
+    if((yaw_pos.degree > MAX_YAW))
     {
-        yaw_pos.degree = yaw_pos.degree - 360;
+        yaw_pos.degree = yaw_pos.degree - FULL_ROTATION;
     }
-    else if(yaw_pos.degree <= -180)
+    else if(yaw_pos.degree <= MIN_YAW)
     {
-        yaw_pos.degree = yaw_pos.degree + 360;
+        yaw_pos.degree = yaw_pos.degree + FULL_ROTATION;
     }
 }
 

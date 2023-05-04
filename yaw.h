@@ -11,13 +11,28 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define N_SLOTS 448
+#define FULL_ROTATION 360
+#define MAX_YAW 180
+#define MIN_YAW -180
+#define DECIMAL_PLACES 10
+
 typedef struct
 {
     int32_t degree;
     int8_t sub_degree;
 } YawPosition;
 
-static int32_t yaw;
+// quadrature decoding states
+typedef enum QDStates = {
+    INVALID = -1,
+    LO_LO,
+    HI_LO,
+    LO_HI,
+    HI_HI
+};
+
+static int16_t yaw;
 static YawPosition yaw_pos;
 
 void initYaw(void);

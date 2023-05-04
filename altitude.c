@@ -53,12 +53,13 @@ void initAltitude(void)
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
+    // reads the sum of the buffer in the first pass after short initial delay
     buffer_sum = 0;
     int i = 0;
     for (; i < BUF_SIZE; i++)
         buffer_sum = buffer_sum + readCircBuf (&g_inBuffer);
 
-    init_mean_altitude = (2 * buffer_sum + BUF_SIZE) / 2 / BUF_SIZE;
+    init_mean_altitude = (2 * buffer_sum + BUF_SIZE) / 2 / BUF_SIZE; // mean altitude
 }
 
 //*****************************************************************************
@@ -99,11 +100,11 @@ void updateAltitude(void)
 
     if (init_mean_altitude >= mean_altitude)
     {
-        percentage_val =  (100 * (int16_t)(init_mean_altitude - mean_altitude)) / ALTITUDE_VOLTAGE_RANGE;
+        percentage_val =  (PERCENT * (int16_t)(init_mean_altitude - mean_altitude)) / ALTITUDE_VOLTAGE_RANGE;
     }
     else
     {
-        percentage_val = - (100 * (int16_t)(mean_altitude - init_mean_altitude)) / ALTITUDE_VOLTAGE_RANGE;
+        percentage_val = - (PERCENT * (int16_t)(mean_altitude - init_mean_altitude)) / ALTITUDE_VOLTAGE_RANGE;
     }
 }
 

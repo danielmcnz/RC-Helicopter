@@ -15,6 +15,7 @@
 
 #define BUF_SIZE 10
 #define ALTITUDE_VOLTAGE_RANGE 1000
+#define PERCENT 100
 
 static circBuf_t g_inBuffer; // Buffer of size BUF_SIZE integers (sample values)
 static int32_t buffer_sum; // sum of the values in the circular buffer

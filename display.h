@@ -13,6 +13,7 @@
 
 #include "yaw.h"
 
+
 #define DISPLAY_DELAY 100000000 / 64000 // MAKE THESE NON MAGIC VARIABLES
 
 enum DisplayState {PERCENTAGE = 0, MEAN, OFF};
