@@ -59,6 +59,8 @@ void initAltitude(void)
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
+    SysCtlDelay(10 * (SysCtlClockGet() / 60));
+
     // reads the sum of the buffer in the first pass after short initial delay
     buffer_sum = 0;
     int i = 0;

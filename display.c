@@ -13,6 +13,7 @@
 
 static uint8_t displayState = 0;
 static bool left_button_pushed = false;
+static uint8_t button_state;
 
 void initDisplay(void)
 {
@@ -24,8 +25,6 @@ void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc
 {
     char string[MAX_DISPLAY_LEN];  // 16 characters across the display
     char string1[MAX_DISPLAY_LEN];
-
-    _updateScreenState();
 
     switch(displayState)
     {
@@ -64,7 +63,6 @@ void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc
 
 void _updateScreenState(void)
 {
-    static uint8_t button_state;
 
     left_button_pushed = false;
 
@@ -78,7 +76,7 @@ void _updateScreenState(void)
     if(button_state == PUSHED)
     {
         displayState++;
-        if(displayState > MEAN_SCREEN)
+        if(displayState > OFF)
             displayState = 0;
     }
 }

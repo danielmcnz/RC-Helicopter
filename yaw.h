@@ -24,13 +24,13 @@ typedef struct
 } YawPosition;
 
 // quadrature decoding states
-typedef enum QDStates = {
+enum {
     INVALID = -1,
     LO_LO,
     HI_LO,
     LO_HI,
     HI_HI
-};
+} QDStates;
 
 void initYaw(void);
 

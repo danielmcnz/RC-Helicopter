@@ -11,7 +11,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 
-static int16_t yaw;
+static int32_t yaw;
 static YawPosition yaw_pos;
 
 void initYaw(void)
@@ -53,12 +53,12 @@ void YawIntHandler(void)
     prevState = signalAB;
 
     // ensures yaw value does not overflow integer type
-    if(yaw > N_STEPS)
+    if(yaw > N_SLOTS)
     {
-        yaw -= N_STEPS;
-    } else if(yaw < -N_STEPS)
+        yaw -= N_SLOTS;
+    } else if(yaw < -N_SLOTS)
     {
-        yaw += N_STEPS;
+        yaw += N_SLOTS;
     }
 
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
