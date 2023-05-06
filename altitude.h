@@ -17,11 +17,11 @@
 #define ALTITUDE_VOLTAGE_RANGE 1000
 #define PERCENT 100
 
+void altitudeIntHandler(void);
+
 void _initADC(void);
 
 void initAltitude(void);
-
-void altitudeIntHandler(void);
 
 void updateAltitude(void);
 

@@ -38,7 +38,7 @@
 //*****************************************************************************
 // Global variables
 //*****************************************************************************
-static uint32_t g_ulSampCnt = 0;    // Counter for the interrupts
+static uint32_t g_ulSampCnt;    // Counter for the interrupts
 
 //*****************************************************************************
 //
@@ -81,11 +81,12 @@ initClock (void)
 
 void initialize(void)
 {
+    // SysCtlDelay(10 * (SysCtlClockGet() / SAMPLE_RATE_HZ));
     initClock ();
-    initDisplay ();
-    initButtons();
-    initYaw();
     initAltitude();
+    initButtons();
+    initDisplay ();
+    initYaw();
 
     // Enable interrupts to the processor.
     IntMasterEnable();
@@ -99,21 +100,22 @@ void update(void)
 {
     static uint32_t display_timer = 0;
 
-    //updateYaw();
-    //updateAltitude();
+    updateYaw();
+    updateAltitude();
 
     // delay between each display update as not nessecary to update display every tick
-    //if(display_timer >= DISPLAY_DELAY)
-    //{
-    OLEDStringDraw ("Percentage ADC  ", 0, 0);
-        // updateDisplay(getMeanAltitude(), g_ulSampCnt, getAltitudePerc(), getYaw());
+    if(display_timer >= DISPLAY_DELAY)
+    {
+        updateScreenState();
+
+        updateDisplay(getMeanAltitude(), g_ulSampCnt, getAltitudePerc(), getYaw());
 
         // resets the initial initial altitude when switching between display screens
-        //if(isLeftButtonPushed())
-         //   setInitAltitude(getMeanAltitude());
+        if(isLeftButtonPushed())
+           setInitAltitude(getMeanAltitude());
 
-        //display_timer = 0;
-    //}
+        display_timer = 0;
+    }
 
      ++display_timer;
 }

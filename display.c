@@ -23,8 +23,9 @@ void initDisplay(void)
 
 void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc, YawPosition yaw_pos)
 {
-    char string[MAX_DISPLAY_LEN];  // 16 characters across the display
-    char string1[MAX_DISPLAY_LEN];
+    char altitude_perc_str[MAX_DISPLAY_LEN];  // 16 characters across the display
+    char yaw_degree_str[MAX_DISPLAY_LEN];
+    char yaw_sub_degree_str[MAX_DISPLAY_LEN];
 
     switch(displayState)
     {
@@ -33,20 +34,24 @@ void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc
 
         // Form a new string for the line.  The maximum width specified for the
         //  number field ensures it is displayed right justified.
-        usnprintf (string, sizeof(string), "%6d", altitude_perc);
-        usnprintf (string1, sizeof(string1), "%6d", yaw_pos.degree);
+        usnprintf (altitude_perc_str, sizeof(altitude_perc_str), "%6d", altitude_perc);
+        usnprintf (yaw_degree_str, sizeof(yaw_degree_str), "%4d", yaw_pos.degree);
+        usnprintf (yaw_sub_degree_str, sizeof(yaw_sub_degree_str), "%1d", yaw_pos.sub_degree);
         // Update line on display.
-        OLEDStringDraw (string, 0, 1);
+        OLEDStringDraw (altitude_perc_str, 0, 1);
+        OLEDStringDraw ("%", 6, 1);
 
         OLEDStringDraw ("Yaw (Deg)       ", 0, 2);
-        OLEDStringDraw (string1, 0, 3);
+        OLEDStringDraw (yaw_degree_str, 0, 3);
+        OLEDStringDraw(".", 4, 3);
+        OLEDStringDraw (yaw_sub_degree_str, 5, 3);
 
         break;
     case MEAN_SCREEN:
         OLEDStringDraw ("Mean ADC        ", 0, 0);
 
-        usnprintf (string, sizeof(string), "%6d", mean_altitude);
-        OLEDStringDraw (string, 1, 1);
+        usnprintf (altitude_perc_str, sizeof(altitude_perc_str), "%6d", mean_altitude);
+        OLEDStringDraw (altitude_perc_str, 1, 1);
 
         clearDisplayLine(2);
         clearDisplayLine(3);
@@ -61,7 +66,7 @@ void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc
     }
 }
 
-void _updateScreenState(void)
+void updateScreenState(void)
 {
 
     left_button_pushed = false;

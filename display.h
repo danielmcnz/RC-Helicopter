@@ -24,7 +24,7 @@ void initDisplay(void);
 
 void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc, YawPosition yaw_pos);
 
-void _updateScreenState(void);
+void updateScreenState(void);
 
 void clearDisplayLine(uint8_t line);
 

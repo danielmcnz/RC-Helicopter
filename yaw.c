@@ -69,7 +69,11 @@ void updateYaw(void)
     // convert yaw to a range between 0 to 360 degrees from gpio value
     yaw_pos.degree = ((yaw * FULL_ROTATION) / N_SLOTS) % FULL_ROTATION; // degree precision
     // yaw_pos.sub_degree = ((yaw * 8) % FULL_ROTATION) % 10; // sub degree precision
-    yaw_pos.sub_degree = ((yaw * DECIMAL_PLACES) * (FULL_ROTATION / N_SLOTS)) % DECIMAL_PLACES; 
+    yaw_pos.sub_degree = ((yaw * DECIMAL_PLACES * FULL_ROTATION) / N_SLOTS) % DECIMAL_PLACES;
+
+    // constrain yaw sub precision to be positive as sign is already handled by degree calculation
+    if(yaw_pos.sub_degree < 0)
+        yaw_pos.sub_degree = -yaw_pos.sub_degree;
 
     // constrain yaw between -180 to 180 degrees
     if((yaw_pos.degree > MAX_YAW))

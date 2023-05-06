@@ -17,6 +17,28 @@ static int32_t init_mean_altitude; // initial altitude value
 static uint32_t mean_altitude;
 static int16_t percentage_val;
 
+//*****************************************************************************
+//
+// The handler for the ADC conversion complete interrupt.
+// Writes to the circular buffer.
+//
+//*****************************************************************************
+void altitudeIntHandler(void)
+{
+    uint32_t ulValue;
+
+    //
+    // Get the single sample from ADC0.  ADC_BASE is defined in
+    // inc/hw_memmap.h
+    ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
+    //
+    // Place it in the circular buffer (advancing write index)
+    writeCircBuf (&g_inBuffer, ulValue);
+    //
+    // Clean up, clearing the interrupt
+    ADCIntClear(ADC0_BASE, 3);
+}
+
 void _initADC(void)
 {
     //
@@ -68,28 +90,6 @@ void initAltitude(void)
         buffer_sum = buffer_sum + readCircBuf (&g_inBuffer);
 
     init_mean_altitude = (2 * buffer_sum + BUF_SIZE) / 2 / BUF_SIZE; // mean altitude
-}
-
-//*****************************************************************************
-//
-// The handler for the ADC conversion complete interrupt.
-// Writes to the circular buffer.
-//
-//*****************************************************************************
-void altitudeIntHandler(void)
-{
-    uint32_t ulValue;
-
-    //
-    // Get the single sample from ADC0.  ADC_BASE is defined in
-    // inc/hw_memmap.h
-    ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
-    //
-    // Place it in the circular buffer (advancing write index)
-    writeCircBuf (&g_inBuffer, ulValue);
-    //
-    // Clean up, clearing the interrupt
-    ADCIntClear(ADC0_BASE, 3);
 }
 
 void updateAltitude(void)
