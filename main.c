@@ -48,13 +48,9 @@ static uint32_t g_ulSampCnt;    // Counter for the interrupts
 void
 SysTickIntHandler(void)
 {
-    //
     // Initiate a conversion
-    //
     ADCProcessorTrigger(ADC0_BASE, 3);
     g_ulSampCnt++;
-
-
 }
 
 //*****************************************************************************
@@ -66,14 +62,14 @@ initClock (void)
     // Set the clock rate to 20 MHz
     SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
                    SYSCTL_XTAL_16MHZ);
-    //
+
     // Set up the period for the SysTick timer.  The SysTick timer period is
     // set as a function of the system clock.
     SysTickPeriodSet(SysCtlClockGet() / SAMPLE_RATE_HZ);
-    //
+
     // Register the interrupt handler
     SysTickIntRegister(SysTickIntHandler);
-    //
+
     // Enable interrupt and device
     SysTickIntEnable();
     SysTickEnable();
@@ -81,7 +77,6 @@ initClock (void)
 
 void initialize(void)
 {
-    // SysCtlDelay(10 * (SysCtlClockGet() / SAMPLE_RATE_HZ));
     initClock ();
     initAltitude();
     initButtons();
@@ -90,10 +85,6 @@ void initialize(void)
 
     // Enable interrupts to the processor.
     IntMasterEnable();
-
-    // set delay to fill circular buffer before reading initial values
-    // SysCtlDelay(10 * (SysCtlClockGet() / SAMPLE_RATE_HZ));
-
 }
 
 void update(void)
