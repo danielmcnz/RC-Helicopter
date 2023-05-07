@@ -29,55 +29,15 @@
 #include "yaw.h"
 #include "altitude.h"
 #include "display.h"
+#include "clock.h"
+#include "kernel.h"
 
-//*****************************************************************************
-// Constants
-//*****************************************************************************
 #define SAMPLE_RATE_HZ 60
-
-//*****************************************************************************
-// Global variables
-//*****************************************************************************
-static uint32_t g_ulSampCnt;    // Counter for the interrupts
-
-//*****************************************************************************
-//
-// The interrupt handler for the for SysTick interrupt.
-//
-//*****************************************************************************
-void
-SysTickIntHandler(void)
-{
-    // Initiate a conversion
-    ADCProcessorTrigger(ADC0_BASE, 3);
-    g_ulSampCnt++;
-}
-
-//*****************************************************************************
-// Initialisation functions for the clock (incl. SysTick), ADC, display
-//*****************************************************************************
-void
-initClock (void)
-{
-    // Set the clock rate to 20 MHz
-    SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
-                   SYSCTL_XTAL_16MHZ);
-
-    // Set up the period for the SysTick timer.  The SysTick timer period is
-    // set as a function of the system clock.
-    SysTickPeriodSet(SysCtlClockGet() / SAMPLE_RATE_HZ);
-
-    // Register the interrupt handler
-    SysTickIntRegister(SysTickIntHandler);
-
-    // Enable interrupt and device
-    SysTickIntEnable();
-    SysTickEnable();
-}
 
 void initialize(void)
 {
     initClock ();
+    initKernel();
     initAltitude();
     initButtons();
     initDisplay ();

@@ -73,6 +73,8 @@ void _initADC(void)
     //
     // Enable interrupts for ADC0 sequence 3 (clears any outstanding interrupts)
     ADCIntEnable(ADC0_BASE, 3);
+
+    ADCProcessorTrigger(ADC0_BASE, 3);
 }
 
 void initAltitude(void)
