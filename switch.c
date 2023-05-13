@@ -40,9 +40,9 @@ switch_state_t getSwitch(void)
 
         if (switch_1.switch_position)
         {
-            return Switch_Active
+            return Switch_Active;
         }
-        return Switch_Deactive
+        return Switch_Deactive;
     }
-    return Switch_Same_State
+    return Switch_Same_State;
 }

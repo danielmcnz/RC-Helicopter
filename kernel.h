@@ -28,4 +28,6 @@ void kernelRegisterTask(uint16_t period, void (*run)(void), uint8_t priority);
 
 void kernelRun(void);
 
+void kernelPrioritise(void);
+
 #endif /* KERNEL_H_ */

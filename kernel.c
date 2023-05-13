@@ -77,3 +77,15 @@ void kernelRun(void)
         }
     }
 }
+
+int compare(const void* a, const void* b)
+{
+    if(((task_t*)a)->priority == ((task_t*)b)->priority) return 0;
+    else if (((task_t*)a)->priority < ((task_t*)b)->priority) return -1;
+    else return 1;
+}
+
+void kernelPrioritise(void)
+{
+    qsort(tasks, n_tasks, sizeof(task_t), compare);
+}

@@ -32,8 +32,21 @@
 #include "clock.h"
 #include "kernel.h"
 #include "rotors.h"
+#include "control.h"
 
 #define SAMPLE_RATE_HZ 60
+
+#define ALTITUDE_UPDATE_FREQUENCY 100
+#define YAW_UPDATE_FREQUENCY 100
+#define INPUT_UPDATE_FREQUENCY 50
+#define DISPLAY_UPDATE_FREQUENCY 4
+#define CONTROL_UPDATE_FREQUENCY 200
+
+#define ALTITUDE_PRIORITY 1
+#define YAW_PRIORITY 1
+#define INPUT_PRIORITY 2
+#define DISPLAY_PRIORITY 3
+#define CONTROL_PRIORITY 0
 
 void initialize(void)
 {
@@ -44,6 +57,7 @@ void initialize(void)
     initDisplay ();
     initYaw();
     initRotors();
+    initControl(CONTROL_UPDATE_FREQUENCY);
 
     // Enable interrupts to the processor.
     IntMasterEnable();
@@ -83,12 +97,13 @@ main(void)
 {
     initialize();
 
-    kernelRegisterTask(100, &updateYaw, 1);
-    kernelRegisterTask(100, &updateAltitude, 1);
-    kernelRegisterTask(50, &updateInput, 2);
-    kernelRegisterTask(4, &updateDisplay, 3);
+    kernelRegisterTask(ALTITUDE_UPDATE_FREQUENCY, &updateYaw, ALTITUDE_PRIORITY);
+    kernelRegisterTask(YAW_UPDATE_FREQUENCY, &updateAltitude, YAW_PRIORITY);
+    kernelRegisterTask(INPUT_UPDATE_FREQUENCY, &updateInput, INPUT_PRIORITY);
+    kernelRegisterTask(DISPLAY_UPDATE_FREQUENCY, &updateDisplay, DISPLAY_PRIORITY);
+    kernelRegisterTask(CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
 
-    // kernelPrioritise();
+    kernelPrioritise();
 
     while (1)
     {

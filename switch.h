@@ -1,6 +1,7 @@
 #ifndef SWITCH_H_
 #define SWITCH_H_
 
+#include <stdint.h>
 #include <stdbool.h>
 
 typedef enum {
