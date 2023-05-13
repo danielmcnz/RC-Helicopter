@@ -1,6 +1,6 @@
 #include "control.h"
 
-static uint8_t  control_update_freq; // Check back on this <----------------
+static uint8_t  control_update_freq;
 
 static uint16_t previous_altitude_error = 0;
 static uint32_t sum_altitude_error = 0;
@@ -11,11 +11,10 @@ static uint32_t sum_yaw_error = 0;
 void calculateAltitudeControl(void);
 void calculateYawControl(void);
 
-void initControl(void)
+void initControl(uint8_t update_freq)
 {
-
+    control_update_freq = update_freq;
 }
-
 
 void updateControl(void)
 {
