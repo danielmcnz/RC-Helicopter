@@ -7,9 +7,11 @@
 
 #include <rotors.h>
 
+#include "inc/hw_memmap.h"
 #include "driverlib/pwm.h"
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
+#include "driverlib/pin_map.h"
 
 // PWM clock rate (processor clock / 2)
 #define PWM_DIVIDER_CODE                SYSCTL_PWMDIV_2
@@ -97,7 +99,7 @@ static void _initSecondaryRotor(void)
     GPIOPinTypePWM(PWM_SECONDARY_ROTOR_GPIO_BASE, PWM_SECONDARY_ROTOR_GPIO_PIN);
 
     //configure PWM generator for count up down mode with no sync
-    PWMGenConfigure(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_GEN, PWM_GEN_MODE_UP_DOWM | PWM_GEN_MODE_NO_SYNC);
+    PWMGenConfigure(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // start timers for secondary rotor generator
     PWMGenEnable(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_GEN);
@@ -127,7 +129,7 @@ void configureMainRotor(uint8_t duty_cycle)
     PWMGenPeriodSet(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_GEN, period);
 
     // set pulse width for main rotor PWM
-    PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUT, period * duty_cycle / 100);
+    PWMPulseWidthSet(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUT, period * duty_cycle / 100);
 }
 
 void configureSecondaryRotor(uint8_t duty_cycle)
@@ -149,7 +151,7 @@ void configureSecondaryRotor(uint8_t duty_cycle)
     PWMGenPeriodSet(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_GEN, period);
 
     // set pulse width for secondary rotor PWM
-    PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUT, period * duty_cycle / 100);
+    PWMPulseWidthSet(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUT, period * duty_cycle / 100);
 }
 
 void startRotors(void)

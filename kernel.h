@@ -13,9 +13,9 @@
 
 #define MAX_TASKS 10
 
-typedef struct {
-
-} task_t;
+//typedef struct {
+//
+//} task_t;
 
 void initKernel(uint32_t sample_rate);
 

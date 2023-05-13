@@ -38,7 +38,7 @@
 void initialize(void)
 {
     initClock ();
-    initKernel();
+    initKernel(SAMPLE_RATE_HZ);
     initAltitude();
     initButtons();
     initDisplay ();
@@ -63,7 +63,7 @@ void update(void)
     {
 //        updateScreenState();
 
-        updateDisplay(getMeanAltitude(), g_ulSampCnt, getAltitudePerc(), getYaw());
+        updateDisplay(getMeanAltitude(), getAltitudePerc(), getYaw());
 
         // resets the initial initial altitude when switching between display screens
         if(left_button_pushed)
@@ -79,9 +79,7 @@ void update(void)
     button_state = checkButton(UP);
     if(button_state == PUSHED)
     {
-        displayState++;
-        if(displayState > OFF)
-            displayState = 0;
+        incDisplayState();
     }
 
      ++display_timer;

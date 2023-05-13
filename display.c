@@ -11,9 +11,7 @@
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
-static uint8_t displayState = 0;
-//static bool left_button_pushed = false;
-//static uint8_t button_state;
+static uint8_t display_state = 0;
 
 void initDisplay(void)
 {
@@ -21,13 +19,13 @@ void initDisplay(void)
     OLEDInitialise ();
 }
 
-void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc, YawPosition yaw_pos)
+void updateDisplay(uint32_t mean_altitude, int16_t altitude_perc, YawPosition yaw_pos)
 {
     char altitude_perc_str[MAX_DISPLAY_LEN];  // 16 characters across the display
     char yaw_degree_str[MAX_DISPLAY_LEN];
     char yaw_sub_degree_str[MAX_DISPLAY_LEN];
 
-    switch(displayState)
+    switch(display_state)
     {
     case PERCENTAGE_SCREEN:
         OLEDStringDraw ("Percentage ADC  ", 0, 0);
@@ -66,32 +64,14 @@ void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc
     }
 }
 
-//void updateScreenState(void)
-//{
-//
-//    left_button_pushed = false;
-//
-//    updateButtons ();
-//
-//    button_state = checkButton (LEFT);
-//    if(button_state == PUSHED)
-//        left_button_pushed = true;
-//
-//    button_state = checkButton(UP);
-//    if(button_state == PUSHED)
-//    {
-//        displayState++;
-//        if(displayState > OFF)
-//            displayState = 0;
-//    }
-//}
-
 void clearDisplayLine(uint8_t line)
 {
     OLEDStringDraw ("                ", 0, line);
 }
 
-//bool isLeftButtonPushed(void)
-//{
-//    return left_button_pushed;
-//}
+void incDisplayState(void)
+{
+    display_state++;
+    if(display_state > OFF)
+        display_state = 0;
+}
