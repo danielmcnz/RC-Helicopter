@@ -7,6 +7,8 @@
 
 #include <kernel.h>
 
+#include <stdlib.h>
+
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
 
@@ -46,12 +48,11 @@ void kernelRegisterTask(uint16_t period, void (*run)(void), uint8_t priority)
 {
     if(n_tasks < MAX_TASKS)
     {
-        task_t task = (task_t) {
-            period,
-            run,
-            priority,
-            0
-        };
+        task_t task;
+        task.period = period;
+        task.run = run;
+        task.priority = priority;
+        task.delay = 0;
 
         tasks[n_tasks] = task;
 

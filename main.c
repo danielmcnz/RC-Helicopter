@@ -78,44 +78,20 @@ void updateInput(void)
     }
 }
 
-void update(void)
+int
+main(void)
 {
-//    static uint32_t display_timer = 0;
+    initialize();
 
     kernelRegisterTask(100, &updateYaw, 1);
     kernelRegisterTask(100, &updateAltitude, 1);
     kernelRegisterTask(50, &updateInput, 2);
     kernelRegisterTask(4, &updateDisplay, 3);
 
-    // delay between each display update as not nessecary to update display every tick
-//    if(display_timer >= DISPLAY_DELAY)
-//    {
-////        updateScreenState();
-//
-//        updateDisplay(getMeanAltitude(), getAltitudePerc(), getYaw());
-//
-//        // resets the initial initial altitude when switching between display screens
-//        if(left_button_pushed)
-//           setInitAltitude(getMeanAltitude());
-//
-//        display_timer = 0;
-//    }
-
-
-
-    // ++display_timer;
-}
-
-int
-main(void)
-{
-    initialize();
+    // kernelPrioritise();
 
     while (1)
     {
         kernelRun();
-        // update();
-
-        // SysCtlDelay (SysCtlClockGet() / 6);  // Update display at ~ 4 Hz
     }
 }
