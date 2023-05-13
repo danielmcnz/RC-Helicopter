@@ -12,7 +12,7 @@
 
 static uint32_t g_ulSampCnt;    // Counter for the interrupts
 
-// static task_t* tasks;
+static task_t* tasks;
 
 void initKernel(uint32_t sample_rate)
 {
