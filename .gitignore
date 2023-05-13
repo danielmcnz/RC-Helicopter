@@ -9,3 +9,4 @@ Debug/*
 .project
 
 *.cmd
+/Debug/
