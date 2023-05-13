@@ -72,17 +72,31 @@ void update(void)
         display_timer = 0;
     }
 
-    button_state = checkButton (LEFT);
-    if(button_state == PUSHED)
-        left_button_pushed = true;
-
     button_state = checkButton(UP);
     if(button_state == PUSHED)
     {
-        incDisplayState();
+        incrementAltitude();
     }
 
-     ++display_timer;
+    button_state = checkButton (DOWN);
+    if(button_state == PUSHED)
+    {
+        decrementAltitude();
+    }
+
+    button_state = checkButton (LEFT);
+    if(button_state == PUSHED)
+    {
+        decrementYaw();
+    }
+
+    button_state = checkButton (RIGHT);
+    if(button_state == PUSHED)
+    {
+        incrementYaw();
+    }
+
+    ++display_timer;
 }
 
 int
