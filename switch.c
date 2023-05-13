@@ -1,7 +1,11 @@
 #include "switch.h"
 
 #include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
 #include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/debug.h"
+#include "inc/tm4c123gh6pm.h"
 
 #define PERIPH_SWITCH_1     SYSCTL_PERIPH_GPIOA
 #define PORT_BASE_SWITCH_1  GPIO_PORTA_BASE
