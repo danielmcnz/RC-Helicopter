@@ -12,8 +12,8 @@
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
 static uint8_t displayState = 0;
-static bool left_button_pushed = false;
-static uint8_t button_state;
+//static bool left_button_pushed = false;
+//static uint8_t button_state;
 
 void initDisplay(void)
 {
@@ -66,32 +66,32 @@ void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc
     }
 }
 
-void updateScreenState(void)
-{
-
-    left_button_pushed = false;
-
-    updateButtons ();
-
-    button_state = checkButton (LEFT);
-    if(button_state == PUSHED)
-        left_button_pushed = true;
-
-    button_state = checkButton(UP);
-    if(button_state == PUSHED)
-    {
-        displayState++;
-        if(displayState > OFF)
-            displayState = 0;
-    }
-}
+//void updateScreenState(void)
+//{
+//
+//    left_button_pushed = false;
+//
+//    updateButtons ();
+//
+//    button_state = checkButton (LEFT);
+//    if(button_state == PUSHED)
+//        left_button_pushed = true;
+//
+//    button_state = checkButton(UP);
+//    if(button_state == PUSHED)
+//    {
+//        displayState++;
+//        if(displayState > OFF)
+//            displayState = 0;
+//    }
+//}
 
 void clearDisplayLine(uint8_t line)
 {
     OLEDStringDraw ("                ", 0, line);
 }
 
-bool isLeftButtonPushed(void)
-{
-    return left_button_pushed;
-};
+//bool isLeftButtonPushed(void)
+//{
+//    return left_button_pushed;
+//}

@@ -8,6 +8,9 @@
 #ifndef KERNEL_H_
 #define KERNEL_H_
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #define MAX_TASKS 10
 
 typedef struct {

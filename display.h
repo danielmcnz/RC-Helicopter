@@ -24,10 +24,10 @@ void initDisplay(void);
 
 void updateDisplay(uint32_t mean_altitude, uint32_t count, int16_t altitude_perc, YawPosition yaw_pos);
 
-void updateScreenState(void);
+//void updateScreenState(void);
 
 void clearDisplayLine(uint8_t line);
 
-bool isLeftButtonPushed(void);
+//bool isLeftButtonPushed(void);
 
 #endif /* DISPLAY_H_ */

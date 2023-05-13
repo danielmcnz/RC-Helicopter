@@ -52,6 +52,8 @@ void initialize(void)
 void update(void)
 {
     static uint32_t display_timer = 0;
+    static bool left_button_pushed = false;
+    static uint8_t button_state;
 
     updateYaw();
     updateAltitude();
@@ -59,15 +61,27 @@ void update(void)
     // delay between each display update as not nessecary to update display every tick
     if(display_timer >= DISPLAY_DELAY)
     {
-        updateScreenState();
+//        updateScreenState();
 
         updateDisplay(getMeanAltitude(), g_ulSampCnt, getAltitudePerc(), getYaw());
 
         // resets the initial initial altitude when switching between display screens
-        if(isLeftButtonPushed())
+        if(left_button_pushed)
            setInitAltitude(getMeanAltitude());
 
         display_timer = 0;
+    }
+
+    button_state = checkButton (LEFT);
+    if(button_state == PUSHED)
+        left_button_pushed = true;
+
+    button_state = checkButton(UP);
+    if(button_state == PUSHED)
+    {
+        displayState++;
+        if(displayState > OFF)
+            displayState = 0;
     }
 
      ++display_timer;
