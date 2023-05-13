@@ -13,7 +13,7 @@
 
 #define MAX_STR_LEN 17
 
-#define BAUD_RATE               9600
+#define BAUD_RATE   9600
 
 void initUART(void);
 

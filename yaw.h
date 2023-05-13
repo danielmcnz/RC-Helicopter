@@ -41,4 +41,10 @@ void updateYaw(void);
 
 YawPosition getYaw(void);
 
+void incrementYaw(void);
+void decrementYaw(void);
+
+uint16_t getDesiredYaw(void);
+uint16_t getYawError(void);
+
 #endif /* YAW_H_ */

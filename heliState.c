@@ -2,7 +2,7 @@
 
 static heliState heli_state;
 
-static bool prevSwitch;
+// static bool prevSwitch;
 
 void initHeliState(void)
 {

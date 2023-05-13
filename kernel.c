@@ -12,13 +12,18 @@
 
 static uint32_t g_ulSampCnt;    // Counter for the interrupts
 
-static task_t* tasks;
+static uint32_t kernel_frequency;
 
-void initKernel(uint32_t sample_rate)
+static task_t* tasks;
+static uint8_t n_tasks;
+
+void initKernel(uint32_t frequency)
 {
+    kernel_frequency = frequency;
+
     // Set up the period for the SysTick timer.  The SysTick timer period is
     // set as a function of the system clock.
-    SysTickPeriodSet(SysCtlClockGet() / sample_rate);
+    SysTickPeriodSet(SysCtlClockGet() / kernel_frequency);
 
     // Register the interrupt handler
     SysTickIntRegister(_kernelSysTickIntHandler);
@@ -26,9 +31,48 @@ void initKernel(uint32_t sample_rate)
     // Enable interrupt and device
     SysTickIntEnable();
     SysTickEnable();
+
+    n_tasks = 0;
+
+    tasks = malloc(sizeof(task_t) * MAX_TASKS);
 }
 
 void _kernelSysTickIntHandler(void)
 {
     g_ulSampCnt++;
+}
+
+void kernelRegisterTask(uint16_t period, void (*run)(void), uint8_t priority)
+{
+    if(n_tasks < MAX_TASKS)
+    {
+        task_t task = (task_t) {
+            period,
+            run,
+            priority,
+            0
+        };
+
+        tasks[n_tasks] = task;
+
+        ++n_tasks;
+    }
+}
+
+void kernelRun(void)
+{
+    uint8_t task;
+    for(task=0;task <= n_tasks; ++task)
+    {
+        if(tasks[task].delay == 0)
+        {
+            tasks[task].run();
+
+            tasks[task].delay = tasks[task].period;
+        }
+        else
+        {
+            tasks[task].delay--;
+        }
+    }
 }

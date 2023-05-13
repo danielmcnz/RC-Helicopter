@@ -119,5 +119,6 @@ uint16_t getDesiredYaw(void)
 
 uint16_t getYawError(void)
 {
-    return getMeanYaw() - getDesiredYaw();
+    // NOTE: CAST IS A TEMPORARY FIX
+    return (uint16_t)(getYaw().degree) - getDesiredYaw();
 }

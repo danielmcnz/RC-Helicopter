@@ -22,7 +22,7 @@ enum DisplayState {PERCENTAGE_SCREEN = 0, MEAN_SCREEN, OFF};
 
 void initDisplay(void);
 
-void updateDisplay(uint32_t mean_altitude, int16_t altitude_perc, YawPosition yaw_pos);
+void updateDisplay();
 
 void clearDisplayLine(uint8_t line);
 
