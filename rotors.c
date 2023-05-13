@@ -107,7 +107,7 @@ static void _initSecondaryRotor(void)
     // disable output for secondary rotor
     PWMOutputState(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUTBIT, false);
 
-    configureMainRotor(DEFAULT_SECONDARY_ROTOR_DUTY_CYCLE);
+    configureSecondaryRotor(DEFAULT_SECONDARY_ROTOR_DUTY_CYCLE);
 }
 
 void configureMainRotor(uint8_t duty_cycle)

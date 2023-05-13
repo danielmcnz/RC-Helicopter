@@ -59,6 +59,11 @@ void initialize(void)
     initRotors();
     initControl(CONTROL_UPDATE_FREQUENCY);
 
+    startRotors();
+
+    configureMainRotor(80);
+    configureSecondaryRotor(10);
+
     // Enable interrupts to the processor.
     IntMasterEnable();
 }
@@ -101,7 +106,7 @@ main(void)
     kernelRegisterTask(YAW_UPDATE_FREQUENCY, &updateAltitude, YAW_PRIORITY);
     kernelRegisterTask(INPUT_UPDATE_FREQUENCY, &updateInput, INPUT_PRIORITY);
     kernelRegisterTask(DISPLAY_UPDATE_FREQUENCY, &updateDisplay, DISPLAY_PRIORITY);
-    kernelRegisterTask(CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
+    // kernelRegisterTask(CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
 
     kernelPrioritise();
 
