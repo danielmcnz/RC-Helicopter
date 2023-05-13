@@ -16,6 +16,7 @@ static int32_t buffer_sum; // sum of the values in the circular buffer
 static int32_t init_mean_altitude; // initial altitude value
 static uint32_t mean_altitude;
 static int16_t percentage_val;
+static uint16_t desired_altitude;
 
 //*****************************************************************************
 //
@@ -132,4 +133,32 @@ int16_t getAltitudePerc(void)
 uint32_t getMeanAltitude(void)
 {
     return mean_altitude;
+}
+
+void incrementAltitude(void)
+{
+    desired_altitude += ALTITUDE_INCREMENT;
+    if (desired_altitude > 100)
+    {
+        desired_altitude = 100;
+    }
+}
+
+void decrementAltitude(void)
+{
+    desired_altitude -= ALTITUDE_INCREMENT;
+    if (desired_altitude < 0)
+    {
+        desired_altitude = 0;
+    }
+}
+
+uint16_t getDesiredAltitude(void)
+{
+    return desired_altitude;
+}
+
+uint16_t getAltitudeError(void)
+{
+    return getMeanAltitude() - getDesiredAltitude();
 }

@@ -16,6 +16,7 @@
 #define MAX_YAW 180
 #define MIN_YAW -180
 #define DECIMAL_PLACES 10
+#define YAW_INCREMENT 15
 
 typedef struct
 {

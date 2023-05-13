@@ -1,5 +1,8 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include "rotors.h"
+#include "altitude.h"
+#include "yaw.h"
 
 #define ALTITUDE_KP 0
 #define ALTITUDE_KD 0

@@ -14,6 +14,8 @@
 static int32_t yaw;
 static YawPosition yaw_pos;
 
+static uint16_t desired_yaw;
+
 void initYaw(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
@@ -89,4 +91,33 @@ void updateYaw(void)
 YawPosition getYaw(void)
 {
     return yaw_pos;
+}
+
+
+void incrementYaw(void)
+{
+    desired_yaw += YAW_INCREMENT;
+    if (desired_yaw > 100)
+    {
+        desired_yaw = 100;
+    }
+}
+
+void decrementYaw(void)
+{
+    desired_yaw -= YAW_INCREMENT;
+    if (desired_yaw < 0)
+    {
+        desired_yaw = 0;
+    }
+}
+
+uint16_t getDesiredYaw(void)
+{
+    return desired_yaw;
+}
+
+uint16_t getYawError(void)
+{
+    return getMeanYaw() - getDesiredYaw();
 }
