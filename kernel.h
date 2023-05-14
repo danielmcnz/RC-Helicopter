@@ -24,7 +24,7 @@ void initKernel(uint32_t sample_rate);
 
 void _kernelSysTickIntHandler(void);
 
-void kernelRegisterTask(uint16_t period, void (*run)(void), uint8_t priority);
+void kernelRegisterTask(uint16_t ticks, void (*run)(void), uint8_t priority);
 
 void kernelRun(void);
 

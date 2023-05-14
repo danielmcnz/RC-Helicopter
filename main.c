@@ -104,8 +104,8 @@ int main(void)
 {
     initialize();
 
-    kernelRegisterTask(SAMPLE_RATE_HZ / ALTITUDE_UPDATE_FREQUENCY, &updateYaw, ALTITUDE_PRIORITY);
-    kernelRegisterTask(SAMPLE_RATE_HZ / YAW_UPDATE_FREQUENCY, &updateAltitude, YAW_PRIORITY);
+    kernelRegisterTask(SAMPLE_RATE_HZ / ALTITUDE_UPDATE_FREQUENCY, &updateAltitude, ALTITUDE_PRIORITY);
+    kernelRegisterTask(SAMPLE_RATE_HZ / YAW_UPDATE_FREQUENCY, &updateYaw, YAW_PRIORITY);
     kernelRegisterTask(SAMPLE_RATE_HZ / INPUT_UPDATE_FREQUENCY, &updateInput, INPUT_PRIORITY);
     kernelRegisterTask(SAMPLE_RATE_HZ / CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
     kernelRegisterTask(SAMPLE_RATE_HZ / DISPLAY_UPDATE_FREQUENCY, &updateDisplay, DISPLAY_PRIORITY);

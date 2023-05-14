@@ -9,8 +9,10 @@
 
 #include <stdlib.h>
 
+#include "inc/hw_memmap.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
+#include "driverlib/adc.h"
 
 static uint32_t g_ulSampCnt;    // Counter for the interrupts
 
@@ -41,18 +43,19 @@ void initKernel(uint32_t frequency)
 
 void _kernelSysTickIntHandler(void)
 {
+    ADCProcessorTrigger(ADC0_BASE, 3);
     g_ulSampCnt++;
 }
 
-void kernelRegisterTask(uint16_t period, void (*run)(void), uint8_t priority)
+void kernelRegisterTask(uint16_t ticks, void (*run)(void), uint8_t priority)
 {
     if(n_tasks < MAX_TASKS)
     {
         task_t task;
-        task.period = period;
+        task.ticks = ticks;
         task.run = run;
         task.priority = priority;
-        task.delay = 0;
+        task.cur_tick = 0;
 
         tasks[n_tasks] = task;
 
