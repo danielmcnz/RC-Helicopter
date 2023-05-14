@@ -36,4 +36,8 @@ void startRotors(void);
 // disables PWM on the rotors
 void stopRotors(void);
 
+uint8_t getMainRotorDutyCycle();
+
+uint8_t getSecondaryRotorDutyCycle();
+
 #endif /* ROTORS_H_ */

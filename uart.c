@@ -9,7 +9,12 @@
 
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.c"
-#include "utils/ustdlib.h"
+#include "utils/ustdlib.h"i
+
+#include "yaw.h"
+#include "altitude.h"
+#include "heliState.h"
+#include "rotors.h"
 
 #define UART_BASE               UART0_BASE
 #define DATA_MASK_EIGHT_BITS    UART_CONFIG_WLEN_8
@@ -27,27 +32,27 @@ void initUART(void)
 
 void sendStatus(void)
 {
-//    char str[MAX_STR_LEN];
-//
-//    // send desired and actual yaw in deg
-//    usnprintf(str, sizeof(str), "Yaw: %4d (%4d) deg", getDesiredYaw(), getYaw());
-//    sendStringUART(str);
-//
-//    // send desired and actual altitude as a percentage of the max altitude
-//    usnprintf(str, sizeof(str), "Altitude: %4d (%4d) %", getDesiredAltitude(), getAltitudePerc());
-//    sendStringUART(str);
-//
-//    // send duty cycle of main rotor
-//    usnprintf(str, sizeof(str), "Main Rotor %: %4d%", getMainRotorDutyCycle());
-//    sendStringUART(str);
-//
-//    // send duty cycle of secondary rotor
-//    usnprintf(str, sizeof(str), "Sec Rotor %: %4d%", getSecondaryRotorDutyCycle());
-//    sendStringUART(str);
-//
-//    // send current helicopter operating mode
-//    usnprintf(str, sizeof(str), "heli state: %8d", getFlightState());
-//    sendStringUART(str);
+    char str[MAX_STR_LEN];
+
+    // send desired and actual yaw in deg
+    usnprintf(str, sizeof(str), "Yaw: %4d (%4d) deg", getDesiredYaw(), getYaw());
+    sendStringUART(str);
+
+    // send desired and actual altitude as a percentage of the max altitude
+    usnprintf(str, sizeof(str), "Altitude: %4d (%4d) %", getDesiredAltitude(), getAltitudePerc());
+    sendStringUART(str);
+
+    // send duty cycle of main rotor
+    usnprintf(str, sizeof(str), "Main Rotor %: %4d%", getMainRotorDutyCycle());
+    sendStringUART(str);
+
+    // send duty cycle of secondary rotor
+    usnprintf(str, sizeof(str), "Sec Rotor %: %4d%", getSecondaryRotorDutyCycle());
+    sendStringUART(str);
+
+    // send current helicopter operating mode
+    usnprintf(str, sizeof(str), "heli state: %8d", getHeliStateStr());
+    sendStringUART(str);
 }
 
 void sendStringUART(char *str)
