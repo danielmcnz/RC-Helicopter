@@ -18,8 +18,8 @@
 #define DEFAULT_SECONDARY_ROTOR_DUTY_CYCLE  25
 
 // duty cycle bounds for rotor PWM
-#define PWM_MAX_DUTY_CYCLE                  98
-#define PWM_MIN_DUTY_CYCLE                  2
+#define PWM_MAX_DUTY_CYCLE                  70 // Told to put as 70 in email as heli will turn off otherwise <----------------------------------------------------------------
+#define PWM_MIN_DUTY_CYCLE                  20 // Just cause doesnt effect anything till ~50
 
 // initialize the rotors for PWM output
 void initRotors(void);
