@@ -148,10 +148,14 @@ void incrementAltitude(void)
 
 void decrementAltitude(void)
 {
-    desired_altitude -= ALTITUDE_INCREMENT;
-    if (desired_altitude < 0)
+
+    if (((int16_t)(desired_altitude) - ALTITUDE_INCREMENT) < 0)
     {
         desired_altitude = 0;
+    }
+    else
+    {
+        desired_altitude -= ALTITUDE_INCREMENT;
     }
 }
 
@@ -160,7 +164,7 @@ uint16_t getDesiredAltitude(void)
     return desired_altitude;
 }
 
-uint16_t getAltitudeError(void)
+int16_t getAltitudeError(void)
 {
     return getAltitudePerc() - getDesiredAltitude();
 }
