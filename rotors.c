@@ -49,6 +49,9 @@ static void _startSecondaryRotor(void);
 static void _stopMainRotor(void);
 static void _stopSecondaryRotor(void);
 
+static uint8_t main_rotor_duty_cycle = 0;
+static uint8_t secondary_rotor_duty_cycle = 0;
+
 void initRotors(void)
 {
     // set PWM clock rate to 10 MHz (80Hz min rate) via pre-scale PWM_DIVIDER_CODE
@@ -122,6 +125,8 @@ void configureMainRotor(uint8_t duty_cycle)
         duty_cycle = PWM_MIN_DUTY_CYCLE;
     }
 
+    main_rotor_duty_cycle = duty_cycle;
+
     // period = clock rate / 2 / rotor frequency
     uint32_t period = SysCtlClockGet() / PWM_DIVIDER / PWM_MAIN_ROTOR_FREQUENCY;
 
@@ -143,6 +148,8 @@ void configureSecondaryRotor(uint8_t duty_cycle)
     {
         duty_cycle = PWM_MIN_DUTY_CYCLE;
     }
+
+    secondary_rotor_duty_cycle = duty_cycle;
 
     // period = clock rate / 2 / rotor frequency
     uint32_t period = SysCtlClockGet() / PWM_DIVIDER / PWM_SECONDARY_ROTOR_FREQUENCY;
@@ -184,4 +191,14 @@ static void _stopMainRotor(void)
 static void _stopSecondaryRotor(void)
 {
     PWMOutputState(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUTBIT, false);
+}
+
+uint8_t getMainRotorDutyCycle()
+{
+    return main_rotor_duty_cycle;
+}
+
+uint8_t getSecondaryRotorDutyCycle()
+{
+    return secondary_rotor_duty_cycle;
 }

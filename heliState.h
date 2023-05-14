@@ -12,7 +12,11 @@ typedef enum {
 } heliState;
 
 void initHeliState(void);
-heliState getHeliState();
+
+heliState getHeliState(void);
+
 void setHeliSate(heliState state);
+
+char* getHeliStateStr(void);
 
 #endif

@@ -33,20 +33,23 @@
 #include "kernel.h"
 #include "rotors.h"
 #include "control.h"
+#include "uart.h"
 
 #define SAMPLE_RATE_HZ 60
 
 #define ALTITUDE_UPDATE_FREQUENCY 100
 #define YAW_UPDATE_FREQUENCY 100
-#define INPUT_UPDATE_FREQUENCY 250
+#define INPUT_UPDATE_FREQUENCY 10
 #define DISPLAY_UPDATE_FREQUENCY 4
 #define CONTROL_UPDATE_FREQUENCY 200
+#define UART_UPDATE_FREQUENCY 4
 
 #define ALTITUDE_PRIORITY 1
 #define YAW_PRIORITY 1
 #define INPUT_PRIORITY 2
 #define DISPLAY_PRIORITY 3
 #define CONTROL_PRIORITY 0
+#define UART_PRIORITY 3
 
 void initialize(void)
 {
@@ -58,6 +61,7 @@ void initialize(void)
     initYaw();
     initRotors();
     initControl(CONTROL_UPDATE_FREQUENCY);
+    initUART();
 
     startRotors();
 
@@ -72,38 +76,42 @@ void updateInput(void)
     button_state = checkButton(UP);
     if(button_state == PUSHED)
     {
-        incrementAltitude();
+        configureMainRotor(80);
+        // incrementAltitude();
     }
 
     button_state = checkButton (DOWN);
     if(button_state == PUSHED)
     {
-        decrementAltitude();
+        configureSecondaryRotor(100);
+        // decrementAltitude();
     }
 
     button_state = checkButton (LEFT);
     if(button_state == PUSHED)
     {
-        decrementYaw();
+        configureMainRotor(80);
+        // decrementYaw();
     }
 
     button_state = checkButton (RIGHT);
     if(button_state == PUSHED)
     {
-        incrementYaw();
+        configureSecondaryRotor(100);
+        // incrementYaw();
     }
 }
 
-int
-main(void)
+int main(void)
 {
     initialize();
 
     kernelRegisterTask(ALTITUDE_UPDATE_FREQUENCY, &updateYaw, ALTITUDE_PRIORITY);
     kernelRegisterTask(YAW_UPDATE_FREQUENCY, &updateAltitude, YAW_PRIORITY);
     kernelRegisterTask(INPUT_UPDATE_FREQUENCY, &updateInput, INPUT_PRIORITY);
-    kernelRegisterTask(DISPLAY_UPDATE_FREQUENCY, &updateDisplay, DISPLAY_PRIORITY);
-    kernelRegisterTask(CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
+    // kernelRegisterTask(CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
+    // kernelRegisterTask(DISPLAY_UPDATE_FREQUENCY, &updateDisplay, DISPLAY_PRIORITY);
+    kernelRegisterTask(UART_UPDATE_FREQUENCY, &sendStatus, UART_PRIORITY);
 
     kernelPrioritise();
 
