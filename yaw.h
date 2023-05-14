@@ -20,7 +20,7 @@
 
 typedef struct
 {
-    int32_t degree;
+    int16_t degree;
     int8_t sub_degree;
 } YawPosition;
 

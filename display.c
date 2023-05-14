@@ -35,8 +35,8 @@ void updateDisplay()
 
         // Form a new string for the line.  The maximum width specified for the
         //  number field ensures it is displayed right justified.
-        usnprintf (altitude_perc_str, sizeof(altitude_perc_str), "%6d", /*getAltitudePerc()*/ getAltitudePerc());
-        usnprintf (yaw_degree_str, sizeof(yaw_degree_str), "%4d", /*getYaw().degree*/ getAltitudeError());
+        usnprintf (altitude_perc_str, sizeof(altitude_perc_str), "%6d", /*getAltitudePerc()*/ getYaw().degree);
+        usnprintf (yaw_degree_str, sizeof(yaw_degree_str), "%4d", /*getYaw().degree*/ getYawError());
         usnprintf (yaw_sub_degree_str, sizeof(yaw_sub_degree_str), "%1d", getYaw().sub_degree);
         // Update line on display.
         OLEDStringDraw (altitude_perc_str, 0, 1);

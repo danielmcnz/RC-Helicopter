@@ -9,7 +9,7 @@
 
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.c"
-#include "utils/ustdlib.h"i
+#include "utils/ustdlib.h"
 
 #include "yaw.h"
 #include "altitude.h"

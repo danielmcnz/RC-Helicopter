@@ -11,10 +11,10 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 
-static int32_t yaw;
+static int16_t yaw;
 static YawPosition yaw_pos;
 
-static uint16_t desired_yaw;
+static uint16_t desired_yaw = 0;
 
 void initYaw(void)
 {
@@ -97,18 +97,21 @@ YawPosition getYaw(void)
 void incrementYaw(void)
 {
     desired_yaw += YAW_INCREMENT;
-    if (desired_yaw > 100)
+    if (desired_yaw > 180)
     {
-        desired_yaw = 100;
+        desired_yaw = 180;
     }
 }
 
 void decrementYaw(void)
 {
-    desired_yaw -= YAW_INCREMENT;
-    if (desired_yaw < 0)
+    if (((int16_t)(desired_yaw) - YAW_INCREMENT) < 0)
     {
         desired_yaw = 0;
+    }
+    else
+    {
+        desired_yaw -= YAW_INCREMENT;
     }
 }
 
@@ -119,6 +122,5 @@ uint16_t getDesiredYaw(void)
 
 int16_t getYawError(void)
 {
-    // NOTE: CAST IS A TEMPORARY FIX
-    return (uint16_t)(getYaw().degree) - getDesiredYaw();
+    return getYaw().degree - getDesiredYaw();
 }
