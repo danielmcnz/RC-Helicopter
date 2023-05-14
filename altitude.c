@@ -93,6 +93,8 @@ void initAltitude(void)
         buffer_sum = buffer_sum + readCircBuf (&g_inBuffer);
 
     init_mean_altitude = (2 * buffer_sum + BUF_SIZE) / 2 / BUF_SIZE; // mean altitude
+
+    desired_altitude = getAltitudePerc();
 }
 
 void updateAltitude(void)
@@ -160,5 +162,5 @@ uint16_t getDesiredAltitude(void)
 
 uint16_t getAltitudeError(void)
 {
-    return getMeanAltitude() - getDesiredAltitude();
+    return getAltitudePerc() - getDesiredAltitude();
 }
