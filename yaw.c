@@ -14,7 +14,7 @@
 static int16_t yaw;
 static YawPosition yaw_pos;
 
-static uint16_t desired_yaw = 0;
+static int16_t desired_yaw = 0;
 
 void initYaw(void)
 {
@@ -97,30 +97,48 @@ YawPosition getYaw(void)
 void incrementYaw(void)
 {
     desired_yaw += YAW_INCREMENT;
-    if (desired_yaw > 180)
+
+    if((desired_yaw > MAX_YAW))
     {
-        desired_yaw = 180;
+        desired_yaw -= FULL_ROTATION;
+    }
+    else if(desired_yaw <= MIN_YAW)
+    {
+        desired_yaw += FULL_ROTATION;
     }
 }
 
 void decrementYaw(void)
 {
-    if (((int16_t)(desired_yaw) - YAW_INCREMENT) < 0)
+    desired_yaw -= YAW_INCREMENT;
+
+    if((desired_yaw > MAX_YAW))
     {
-        desired_yaw = 0;
+        desired_yaw -= FULL_ROTATION;
     }
-    else
+    else if(desired_yaw <= MIN_YAW)
     {
-        desired_yaw -= YAW_INCREMENT;
+        desired_yaw += FULL_ROTATION;
     }
 }
 
-uint16_t getDesiredYaw(void)
+int16_t getDesiredYaw(void)
 {
     return desired_yaw;
 }
 
 int16_t getYawError(void)
 {
-    return getDesiredYaw() - getYaw().degree;
+    int16_t degree_error = getDesiredYaw() - getYaw().degree;
+
+    if((degree_error > MAX_YAW))
+    {
+        degree_error -= FULL_ROTATION;
+    }
+    else if(degree_error <= MIN_YAW)
+    {
+        degree_error += FULL_ROTATION;
+    }
+
+    return degree_error;
 }
