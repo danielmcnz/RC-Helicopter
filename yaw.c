@@ -122,5 +122,5 @@ uint16_t getDesiredYaw(void)
 
 int16_t getYawError(void)
 {
-    return getYaw().degree - getDesiredYaw();
+    return getDesiredYaw() - getYaw().degree;
 }
