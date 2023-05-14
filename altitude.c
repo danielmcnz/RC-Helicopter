@@ -16,7 +16,7 @@ static int32_t buffer_sum; // sum of the values in the circular buffer
 static int32_t init_mean_altitude; // initial altitude value
 static uint32_t mean_altitude;
 static int16_t percentage_val = 0;
-static uint16_t desired_altitude = 0;
+static int16_t desired_altitude = 0;
 
 //*****************************************************************************
 //
@@ -145,7 +145,7 @@ void incrementAltitude(void)
 void decrementAltitude(void)
 {
 
-    if (((int16_t)(desired_altitude) - ALTITUDE_INCREMENT) < 0)
+    if ((desired_altitude - ALTITUDE_INCREMENT) < 0)
     {
         desired_altitude = 0;
     }
