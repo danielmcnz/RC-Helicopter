@@ -14,10 +14,10 @@
 #define MAX_TASKS 10
 
 typedef struct {
-    uint16_t period;
+    uint16_t ticks;
     uint8_t priority;
     void (*run)(void);
-    uint16_t delay;
+    uint16_t cur_tick;
 } task_t;
 
 void initKernel(uint32_t sample_rate);

@@ -35,14 +35,14 @@
 #include "control.h"
 #include "uart.h"
 
-#define SAMPLE_RATE_HZ 60
+#define SAMPLE_RATE_HZ 250
 
-#define ALTITUDE_UPDATE_FREQUENCY 25
-#define YAW_UPDATE_FREQUENCY 25
-#define INPUT_UPDATE_FREQUENCY 2
-#define DISPLAY_UPDATE_FREQUENCY 100
-#define CONTROL_UPDATE_FREQUENCY 10
-#define UART_UPDATE_FREQUENCY 100
+#define ALTITUDE_UPDATE_FREQUENCY 250
+#define YAW_UPDATE_FREQUENCY 250
+#define INPUT_UPDATE_FREQUENCY 200
+#define DISPLAY_UPDATE_FREQUENCY 10
+#define CONTROL_UPDATE_FREQUENCY 250
+#define UART_UPDATE_FREQUENCY 10
 
 #define ALTITUDE_PRIORITY 1
 #define YAW_PRIORITY 1
@@ -104,12 +104,12 @@ int main(void)
 {
     initialize();
 
-    kernelRegisterTask(ALTITUDE_UPDATE_FREQUENCY, &updateYaw, ALTITUDE_PRIORITY);
-    kernelRegisterTask(YAW_UPDATE_FREQUENCY, &updateAltitude, YAW_PRIORITY);
-    kernelRegisterTask(INPUT_UPDATE_FREQUENCY, &updateInput, INPUT_PRIORITY);
-    kernelRegisterTask(CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
-    kernelRegisterTask(DISPLAY_UPDATE_FREQUENCY, &updateDisplay, DISPLAY_PRIORITY);
-    kernelRegisterTask(UART_UPDATE_FREQUENCY, &sendStatus, UART_PRIORITY);
+    kernelRegisterTask(SAMPLE_RATE_HZ / ALTITUDE_UPDATE_FREQUENCY, &updateYaw, ALTITUDE_PRIORITY);
+    kernelRegisterTask(SAMPLE_RATE_HZ / YAW_UPDATE_FREQUENCY, &updateAltitude, YAW_PRIORITY);
+    kernelRegisterTask(SAMPLE_RATE_HZ / INPUT_UPDATE_FREQUENCY, &updateInput, INPUT_PRIORITY);
+    kernelRegisterTask(SAMPLE_RATE_HZ / CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
+    kernelRegisterTask(SAMPLE_RATE_HZ / DISPLAY_UPDATE_FREQUENCY, &updateDisplay, DISPLAY_PRIORITY);
+    kernelRegisterTask(SAMPLE_RATE_HZ / UART_UPDATE_FREQUENCY, &sendStatus, UART_PRIORITY);
 
     kernelPrioritise();
 

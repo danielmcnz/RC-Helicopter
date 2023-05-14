@@ -166,5 +166,5 @@ uint16_t getDesiredAltitude(void)
 
 int16_t getAltitudeError(void)
 {
-    return getAltitudePerc() - getDesiredAltitude();
+    return getDesiredAltitude() - getAltitudePerc();
 }

@@ -65,15 +65,15 @@ void kernelRun(void)
     uint8_t task;
     for(task=0;task <= n_tasks; ++task)
     {
-         if(tasks[task].delay == 0)
+         if(tasks[task].cur_tick == 0)
          {
             tasks[task].run();
 
-             tasks[task].delay = tasks[task].period;
+             tasks[task].cur_tick = tasks[task].ticks;
          }
          else
          {
-             tasks[task].delay--;
+             tasks[task].cur_tick--;
          }
     }
 }
