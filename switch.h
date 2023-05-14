@@ -5,9 +5,9 @@
 #include <stdbool.h>
 
 typedef enum {
-    Switch_Same_State = 0,
-    Switch_Active,
-    Switch_Deactive
+    SWITCH_NO_CHANGE = 0,
+    SWITCH_UP,
+    SWITCH_DOWN
 } switch_state_t;
 
 typedef struct
@@ -19,7 +19,7 @@ typedef struct
 
 
 void initSwitch(void);
-void checkSwitch(void);
-switch_state_t getSwitch(void);
+void updateSwitch(void);
+switch_state_t checkSwitch(void);
 
 #endif

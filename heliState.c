@@ -6,7 +6,7 @@ static heliState heli_state;
 
 void initHeliState(void)
 {
-    heli_state = Landed;
+    heli_state = LANDED;
 }
 
 heliState getHeliState(void)
@@ -18,20 +18,20 @@ char* getHeliStateStr(void)
 {
     switch(heli_state)
     {
-    case Landed:
+    case LANDED:
         return "landed\0";
-    case Taking_Off:
+    case TAKING_OFF:
         return "taking off\0";
-    case Flying:
+    case FLYING:
         return "flying\0";
-    case Landing:
+    case LANDING:
         return "landing\0";
     default:
         return "unknown\0";
     }
 }
 
-void setHeliSate(heliState state)
+void setHeliState(heliState state)
 {
     heli_state = state;
 }

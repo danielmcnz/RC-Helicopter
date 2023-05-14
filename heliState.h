@@ -5,17 +5,17 @@
 #include <stdbool.h>
 
 typedef enum {
-    Landed = 0,
-    Taking_Off,
-    Flying,
-    Landing
+    LANDED = 0,
+    TAKING_OFF,
+    FLYING,
+    LANDING
 } heliState;
 
 void initHeliState(void);
 
 heliState getHeliState(void);
 
-void setHeliSate(heliState state);
+void setHeliState(heliState state);
 
 char* getHeliStateStr(void);
 

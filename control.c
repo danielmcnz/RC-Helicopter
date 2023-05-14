@@ -1,5 +1,7 @@
 #include "control.h"
 
+#include "heliState.h"
+
 #define PID_SCALING_FACTOR 100
 #define CONTROL_DIVISOR PID_SCALING_FACTOR * 10
 
@@ -21,13 +23,35 @@ void initControl(uint8_t update_freq)
 
 void updateControl(void)
 {
-    calculateAltitudeControl();
-    calculateYawControl();
+    if(getHeliState() == TAKING_OFF)
+    {
+        // go to hover and rotate to known reference point
+
+        configureMainRotor(50);
+    }
+    else if(getHeliState() == LANDING)
+    {
+        // go to hover and rotate to known reference point, then land
+    }
+    else if(getHeliState() == FLYING)
+    {
+        calculateAltitudeControl();
+        calculateYawControl();
+    }
+    else
+    {
+        configureMainRotor(0);
+        configureSecondaryRotor(0);
+    }
 }
+
+static int16_t error_temp_watch = 0;
 
 void calculateAltitudeControl(void)
 {
     int16_t error = getAltitudeError();
+
+    error_temp_watch = error;
 
     int16_t proporional_error = error * PID_SCALING_FACTOR;
     int16_t derivative_error = (error - previous_altitude_error) * control_update_freq * PID_SCALING_FACTOR;

@@ -34,6 +34,8 @@
 #include "rotors.h"
 #include "control.h"
 #include "uart.h"
+#include "switch.h"
+#include "heliState.h"
 
 #define SAMPLE_RATE_HZ 250
 
@@ -62,6 +64,7 @@ void initialize(void)
     initRotors();
     initControl(CONTROL_UPDATE_FREQUENCY);
     initUART();
+    initSwitch();
 
     startRotors();
 
@@ -71,32 +74,39 @@ void initialize(void)
 
 void updateInput(void)
 {
-    static uint8_t button_state;
-
     updateButtons();
+    updateSwitch();
 
-    button_state = checkButton(UP);
-    if(button_state == PUSHED)
+    if(getHeliState() == FLYING)
     {
-        incrementAltitude();
+        if(checkButton(UP) == PUSHED)
+        {
+            incrementAltitude();
+        }
+
+        if(checkButton (DOWN) == PUSHED)
+        {
+            decrementAltitude();
+        }
+
+        if(checkButton (LEFT) == PUSHED)
+        {
+            decrementYaw();
+        }
+
+        if(checkButton (RIGHT) == PUSHED)
+        {
+            incrementYaw();
+        }
     }
 
-    button_state = checkButton (DOWN);
-    if(button_state == PUSHED)
+    if(checkSwitch() == SWITCH_UP && getHeliState() == LANDED)
     {
-        decrementAltitude();
+        setHeliState(TAKING_OFF);
     }
-
-    button_state = checkButton (LEFT);
-    if(button_state == PUSHED)
+    else if(checkSwitch() == SWITCH_DOWN && getHeliState() == FLYING)
     {
-        decrementYaw();
-    }
-
-    button_state = checkButton (RIGHT);
-    if(button_state == PUSHED)
-    {
-        incrementYaw();
+        setHeliState(LANDING);
     }
 }
 

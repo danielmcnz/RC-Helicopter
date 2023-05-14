@@ -21,7 +21,7 @@ void initSwitch(void)
     switch_1.switch_position = GPIOPinRead(PORT_BASE_SWITCH_1, PIN_SWITCH_1) == PIN_SWITCH_1;
 }
 
-void checkSwitch(void)
+void updateSwitch(void)
 {
     switch_1.check_switch_position = GPIOPinRead(PORT_BASE_SWITCH_1, PIN_SWITCH_1) == PIN_SWITCH_1;
 
@@ -32,7 +32,7 @@ void checkSwitch(void)
     switch_1.switch_position = switch_1.check_switch_position;
 }
 
-switch_state_t getSwitch(void)
+switch_state_t checkSwitch(void)
 {
     if (switch_1.switch_changed)
     {
@@ -40,9 +40,9 @@ switch_state_t getSwitch(void)
 
         if (switch_1.switch_position)
         {
-            return Switch_Active;
+            return SWITCH_UP;
         }
-        return Switch_Deactive;
+        return SWITCH_DOWN;
     }
-    return Switch_Same_State;
+    return SWITCH_NO_CHANGE;
 }

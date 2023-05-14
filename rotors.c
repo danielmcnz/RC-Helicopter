@@ -13,6 +13,8 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 
+#include "heliState.h"
+
 // PWM clock rate (processor clock / 2)
 #define PWM_DIVIDER_CODE                SYSCTL_PWMDIV_2
 
@@ -120,14 +122,17 @@ void configureMainRotor(int16_t duty_cycle)
 {
     temp_var_watch = duty_cycle;
 
-    // checks that duty cycle is between the min and max bounds
-    if(duty_cycle > PWM_MAX_DUTY_CYCLE)
+    if(getHeliState() != LANDED)
     {
-        duty_cycle = PWM_MAX_DUTY_CYCLE;
-    }
-    else if (duty_cycle < PWM_MIN_DUTY_CYCLE)
-    {
-        duty_cycle = PWM_MIN_DUTY_CYCLE;
+        // checks that duty cycle is between the min and max bounds
+        if(duty_cycle > PWM_MAX_DUTY_CYCLE)
+        {
+            duty_cycle = PWM_MAX_DUTY_CYCLE;
+        }
+        else if (duty_cycle < PWM_MIN_DUTY_CYCLE)
+        {
+            duty_cycle = PWM_MIN_DUTY_CYCLE;
+        }
     }
 
     main_rotor_duty_cycle = (uint8_t)duty_cycle;
@@ -144,14 +149,17 @@ void configureMainRotor(int16_t duty_cycle)
 
 void configureSecondaryRotor(int16_t duty_cycle)
 {
-    // checks that duty cycle is between the min and max bounds
-    if(duty_cycle > PWM_MAX_DUTY_CYCLE)
+    if(getHeliState() != LANDED)
     {
-        duty_cycle = PWM_MAX_DUTY_CYCLE;
-    }
-    else if (duty_cycle < PWM_MIN_DUTY_CYCLE)
-    {
-        duty_cycle = PWM_MIN_DUTY_CYCLE;
+        // checks that duty cycle is between the min and max bounds
+        if(duty_cycle > PWM_MAX_DUTY_CYCLE)
+        {
+            duty_cycle = PWM_MAX_DUTY_CYCLE;
+        }
+        else if (duty_cycle < PWM_MIN_DUTY_CYCLE)
+        {
+            duty_cycle = PWM_MIN_DUTY_CYCLE;
+        }
     }
 
     secondary_rotor_duty_cycle = (uint8_t)duty_cycle;
