@@ -44,22 +44,16 @@ void sendStatus(void)
 {
     char str[MAX_STR_LEN];
 
-    sendStringUART("\r\n------------\r\n\0");
-
     // send desired and actual yaw in deg
-    usnprintf(str, sizeof(str), "Yaw: %3d (%1d) deg \r\n\0", getDesiredYaw(), getYaw().degree);
+    usnprintf(str, sizeof(str), "Yaw: %3d (%1d) \r\n\0", getDesiredYaw(), getYaw().degree);
     sendStringUART(str);
 
     // send desired and actual altitude as a percentage of the max altitude
-    usnprintf(str, sizeof(str), "Alt: (%3d) \r\n\0" /*, getDesiredAltitude()*/, getAltitudePerc());
+    usnprintf(str, sizeof(str), "Alt: %3d (%3d) \r\n\0" , getDesiredAltitude(), getAltitudePerc());
     sendStringUART(str);
 
     // send duty cycle of main rotor
-    usnprintf(str, sizeof(str), "Main Rotor DC: %4d \r\n\0", getMainRotorDutyCycle());
-    sendStringUART(str);
-
-    // send duty cycle of secondary rotor
-    usnprintf(str, sizeof(str), "Sec Rotor DC: %4d \r\n\0", getSecondaryRotorDutyCycle());
+    usnprintf(str, sizeof(str), "Main %3d Tail %3d \r\n\0", getMainRotorDutyCycle(), getSecondaryRotorDutyCycle());
     sendStringUART(str);
 
     // send current helicopter operating mode
