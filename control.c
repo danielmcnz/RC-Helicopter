@@ -27,10 +27,10 @@ void calculateAltitudeControl(void)
     uint16_t error = getAltitudeError();
 
     uint32_t proporional_error = error * 100;
-    uint32_t derivative_error = (error - previous_yaw_error) * control_update_freq * 100;
-    uint32_t intergral_error_sum = sum_yaw_error + (error * 100) / control_update_freq;
+    uint32_t derivative_error = (error - previous_altitude_error) * control_update_freq * 100;
+    uint32_t intergral_error_sum = sum_altitude_error + (error * 100) / control_update_freq;
 
-    uint32_t control_output = YAW_KP * proporional_error + YAW_KD * derivative_error + YAW_KI * intergral_error_sum;
+    uint32_t control_output = ALTITUDE_KP * proporional_error + ALTITUDE_KD * derivative_error + ALTITUDE_KI * intergral_error_sum;
     control_output /= 100;
 
     if (control_output <= PWM_MAX_DUTY_CYCLE && control_output >= PWM_MIN_DUTY_CYCLE)

@@ -12,7 +12,6 @@
 #define YAW_KD 3
 #define YAW_KI 2
 
-
-
 void initControl(uint8_t update_freq);
+
 void updateControl(void);

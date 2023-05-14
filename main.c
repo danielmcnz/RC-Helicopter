@@ -38,7 +38,7 @@
 
 #define ALTITUDE_UPDATE_FREQUENCY 100
 #define YAW_UPDATE_FREQUENCY 100
-#define INPUT_UPDATE_FREQUENCY 50
+#define INPUT_UPDATE_FREQUENCY 250
 #define DISPLAY_UPDATE_FREQUENCY 4
 #define CONTROL_UPDATE_FREQUENCY 200
 
@@ -60,9 +60,6 @@ void initialize(void)
     initControl(CONTROL_UPDATE_FREQUENCY);
 
     startRotors();
-
-    configureMainRotor(80);
-    configureSecondaryRotor(10);
 
     // Enable interrupts to the processor.
     IntMasterEnable();
@@ -106,7 +103,7 @@ main(void)
     kernelRegisterTask(YAW_UPDATE_FREQUENCY, &updateAltitude, YAW_PRIORITY);
     kernelRegisterTask(INPUT_UPDATE_FREQUENCY, &updateInput, INPUT_PRIORITY);
     kernelRegisterTask(DISPLAY_UPDATE_FREQUENCY, &updateDisplay, DISPLAY_PRIORITY);
-    // kernelRegisterTask(CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
+    kernelRegisterTask(CONTROL_UPDATE_FREQUENCY, &updateControl, CONTROL_PRIORITY);
 
     kernelPrioritise();
 

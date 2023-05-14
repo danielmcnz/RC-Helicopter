@@ -37,7 +37,7 @@
 #define PWM_SECONDARY_ROTOR_GPIO_PIN    GPIO_PIN_1
 #define PWM_SECONDARY_ROTOR_BASE        PWM1_BASE
 #define PWM_SECONDARY_ROTOR_GEN         PWM_GEN_2
-#define PWM_SECONDARY_ROTOR_OUT         PWM_OUT_7
+#define PWM_SECONDARY_ROTOR_OUT         PWM_OUT_5
 #define PWM_SECONDARY_ROTOR_OUTBIT      PWM_OUT_5_BIT
 
 static void _initMainRotor(void);
