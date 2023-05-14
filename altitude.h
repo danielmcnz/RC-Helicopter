@@ -34,6 +34,6 @@ uint32_t getMeanAltitude(void);
 void incrementAltitude(void);
 void decrementAltitude(void);
 uint16_t getDesiredAltitude(void);
-uint16_t getAltitudeError(void);
+int16_t getAltitudeError(void);
 
 #endif /* ALTITUDE_H_ */
