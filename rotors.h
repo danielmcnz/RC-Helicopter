@@ -25,10 +25,10 @@
 void initRotors(void);
 
 // sets the period and duty cycle for the main rotor, bounded between the constraints if nessecary
-void configureMainRotor(uint8_t duty_cycle);
+void configureMainRotor(int16_t duty_cycle);
 
 // sets the period and duty cycle for the secondary rotor, bounded between the constraints if nessecary
-void configureSecondaryRotor(uint8_t duty_cycle);
+void configureSecondaryRotor(int16_t duty_cycle);
 
 // enables PWM on the rotors
 void startRotors(void);
@@ -36,8 +36,8 @@ void startRotors(void);
 // disables PWM on the rotors
 void stopRotors(void);
 
-uint8_t getMainRotorDutyCycle();
+uint8_t getMainRotorDutyCycle(void);
 
-uint8_t getSecondaryRotorDutyCycle();
+uint8_t getSecondaryRotorDutyCycle(void);
 
 #endif /* ROTORS_H_ */

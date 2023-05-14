@@ -5,7 +5,7 @@
  *      Author: dmc270
  */
 
-#include <rotors.h>
+#include "rotors.h"
 
 #include "inc/hw_memmap.h"
 #include "driverlib/pwm.h"
@@ -51,6 +51,9 @@ static void _stopSecondaryRotor(void);
 
 static uint8_t main_rotor_duty_cycle = 0;
 static uint8_t secondary_rotor_duty_cycle = 0;
+
+
+static int16_t temp_var_watch = 0;
 
 void initRotors(void)
 {
@@ -113,8 +116,10 @@ static void _initSecondaryRotor(void)
     configureSecondaryRotor(DEFAULT_SECONDARY_ROTOR_DUTY_CYCLE);
 }
 
-void configureMainRotor(uint8_t duty_cycle)
+void configureMainRotor(int16_t duty_cycle)
 {
+    temp_var_watch = duty_cycle;
+
     // checks that duty cycle is between the min and max bounds
     if(duty_cycle > PWM_MAX_DUTY_CYCLE)
     {
@@ -125,7 +130,7 @@ void configureMainRotor(uint8_t duty_cycle)
         duty_cycle = PWM_MIN_DUTY_CYCLE;
     }
 
-    main_rotor_duty_cycle = duty_cycle;
+    main_rotor_duty_cycle = (uint8_t)duty_cycle;
 
     // period = clock rate / 2 / rotor frequency
     uint32_t period = SysCtlClockGet() / PWM_DIVIDER / PWM_MAIN_ROTOR_FREQUENCY;
@@ -134,10 +139,10 @@ void configureMainRotor(uint8_t duty_cycle)
     PWMGenPeriodSet(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_GEN, period);
 
     // set pulse width for main rotor PWM
-    PWMPulseWidthSet(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUT, period * duty_cycle / 100);
+    PWMPulseWidthSet(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUT, period * main_rotor_duty_cycle / 100);
 }
 
-void configureSecondaryRotor(uint8_t duty_cycle)
+void configureSecondaryRotor(int16_t duty_cycle)
 {
     // checks that duty cycle is between the min and max bounds
     if(duty_cycle > PWM_MAX_DUTY_CYCLE)
@@ -149,7 +154,7 @@ void configureSecondaryRotor(uint8_t duty_cycle)
         duty_cycle = PWM_MIN_DUTY_CYCLE;
     }
 
-    secondary_rotor_duty_cycle = duty_cycle;
+    secondary_rotor_duty_cycle = (uint8_t)duty_cycle;
 
     // period = clock rate / 2 / rotor frequency
     uint32_t period = SysCtlClockGet() / PWM_DIVIDER / PWM_SECONDARY_ROTOR_FREQUENCY;
@@ -158,7 +163,7 @@ void configureSecondaryRotor(uint8_t duty_cycle)
     PWMGenPeriodSet(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_GEN, period);
 
     // set pulse width for secondary rotor PWM
-    PWMPulseWidthSet(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUT, period * duty_cycle / 100);
+    PWMPulseWidthSet(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUT, period * secondary_rotor_duty_cycle / 100);
 }
 
 void startRotors(void)
@@ -193,12 +198,12 @@ static void _stopSecondaryRotor(void)
     PWMOutputState(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUTBIT, false);
 }
 
-uint8_t getMainRotorDutyCycle()
+uint8_t getMainRotorDutyCycle(void)
 {
     return main_rotor_duty_cycle;
 }
 
-uint8_t getSecondaryRotorDutyCycle()
+uint8_t getSecondaryRotorDutyCycle(void)
 {
     return secondary_rotor_duty_cycle;
 }

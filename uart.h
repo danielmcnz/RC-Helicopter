@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define MAX_STR_LEN 19
+#define MAX_STR_LEN 28
 
 #define BAUD_RATE   9600
 

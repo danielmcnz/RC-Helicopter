@@ -4,9 +4,9 @@
 #include "altitude.h"
 #include "yaw.h"
 
-#define ALTITUDE_KP 6
-#define ALTITUDE_KD 2
-#define ALTITUDE_KI 3
+#define ALTITUDE_KP 60
+#define ALTITUDE_KD 20
+#define ALTITUDE_KI 300
 
 #define YAW_KP 5
 #define YAW_KD 3

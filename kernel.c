@@ -5,7 +5,7 @@
  *      Author: dmc270
  */
 
-#include <kernel.h>
+#include "kernel.h"
 
 #include <stdlib.h>
 

@@ -19,13 +19,15 @@ char* getHeliStateStr(void)
     switch(heli_state)
     {
     case Landed:
-        return "landed";
+        return "landed\0";
     case Taking_Off:
-        return "taking off";
+        return "taking off\0";
     case Flying:
-        return "flying";
+        return "flying\0";
     case Landing:
-        return "landing";
+        return "landing\0";
+    default:
+        return "unknown\0";
     }
 }
 
