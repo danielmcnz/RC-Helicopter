@@ -9,4 +9,5 @@ Debug/*
 .project
 
 *.cmd
-/Debug/
+
+*.py
