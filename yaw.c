@@ -187,3 +187,8 @@ void resetYaw(void)
 {
     yaw = 0;
 }
+
+void setDesiredYaw(int16_t desired)
+{
+    desired_yaw = desired;
+}

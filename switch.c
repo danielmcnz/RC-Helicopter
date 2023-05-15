@@ -25,6 +25,7 @@ void updateSwitch(void)
 {
     switch_1.check_switch_position = GPIOPinRead(PORT_BASE_SWITCH_1, PIN_SWITCH_1) == PIN_SWITCH_1;
 
+    switch_1.switch_changed = false;
     if (switch_1.check_switch_position != switch_1.switch_position)
     {
         switch_1.switch_changed = true;

@@ -50,4 +50,6 @@ int16_t getYawError(void);
 bool getYawRef();
 void resetYaw(void);
 
+void setDesiredYaw(int16_t desired);
+
 #endif /* YAW_H_ */

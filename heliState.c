@@ -2,8 +2,6 @@
 
 static heliState heli_state;
 
-// static bool prevSwitch;
-
 void initHeliState(void)
 {
     heli_state = LANDED;
