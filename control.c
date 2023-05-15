@@ -88,8 +88,6 @@ void calculateYawControl(void)
 
     int16_t error = getYawError();
 
-    error_temp_watch = error;
-
     if (error < 0)
     {
         direction_clock_wise = false;
@@ -113,16 +111,24 @@ void calculateYawControl(void)
         error *= -1;
     }
 
-    error_temp_watch_after = error;
+    error_temp_watch = error;
 
-    int32_t proporional_error = error;
+    int32_t proporional = error * YAW_KP;
+    if (10 * CONTROL_DIVISOR < proporional)
+    {
+        proporional = 10 * CONTROL_DIVISOR;
+    }
+    elif (-10 * CONTROL_DIVISOR > proporional)
+    {
+        proporional = -10 * CONTROL_DIVISOR;
+    }
 
-    int32_t derivative_error = (error - previous_yaw_error);
+    int32_t derivative_error = (error - previous_yaw_error) * YAW_KD;
     previous_yaw_error = error;
 
     int32_t intergral_error_sum = sum_yaw_error + error;
 
-    int32_t control_output = YAW_KP * proporional_error + YAW_KD * derivative_error + YAW_KI * intergral_error_sum;
+    int32_t control_output = proporional+ YAW_KD * derivative_error + YAW_KI * intergral_error_sum;
     control_output /= CONTROL_DIVISOR;
 
     if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE))
