@@ -121,8 +121,6 @@ static void _initSecondaryRotor(void)
 
 void configureMainRotor(int32_t duty_cycle)
 {
-    temp_var_watch = duty_cycle;
-
     // checks that duty cycle is between the min and max bounds
     if(duty_cycle > PWM_MAX_DUTY_CYCLE)
     {
@@ -147,6 +145,8 @@ void configureMainRotor(int32_t duty_cycle)
 
 void configureSecondaryRotor(int16_t duty_cycle)
 {
+    temp_var_watch = duty_cycle;
+
     // checks that duty cycle is between the min and max bounds
     if(duty_cycle > PWM_MAX_DUTY_CYCLE)
     {

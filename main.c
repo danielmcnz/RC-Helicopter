@@ -24,8 +24,8 @@
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
-#include "circBufT.h"
 #include "buttons4.h"
+#include "circBufT.h"
 #include "yaw.h"
 #include "altitude.h"
 #include "display.h"
@@ -42,7 +42,7 @@
 
 #define ALTITUDE_UPDATE_FREQUENCY 150
 #define YAW_UPDATE_FREQUENCY 150
-#define INPUT_UPDATE_FREQUENCY 20
+#define INPUT_UPDATE_FREQUENCY 50
 #define DISPLAY_UPDATE_FREQUENCY 10
 #define CONTROL_UPDATE_FREQUENCY 20
 #define UART_UPDATE_FREQUENCY 10
@@ -59,14 +59,14 @@ void initialize(void)
     initClock ();
     initKernel(SAMPLE_RATE_HZ);
     initAltitude();
-    initButtons();
     initDisplay ();
     initYaw();
     initRotors();
     initControl(CONTROL_UPDATE_FREQUENCY);
     initUART();
-    initSwitch();
     initReset();
+    initButtons();
+    initSwitch();
 
     // Enable interrupts to the processor.
     IntMasterEnable();
@@ -83,18 +83,15 @@ void updateInput(void)
         {
             incrementAltitude();
         }
-
-        if(checkButton (DOWN) == PUSHED)
+        else if(checkButton(DOWN) == PUSHED)
         {
             decrementAltitude();
         }
-
-        if(checkButton (LEFT) == PUSHED)
+        else if(checkButton(LEFT) == PUSHED)
         {
             decrementYaw();
         }
-
-        if(checkButton (RIGHT) == PUSHED)
+        else if(checkButton(RIGHT) == PUSHED)
         {
             incrementYaw();
         }

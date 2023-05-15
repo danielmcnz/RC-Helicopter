@@ -62,8 +62,6 @@ void calculateAltitudeControl(void)
 {
     int16_t error = getAltitudeError();
 
-    error_temp_watch = error;
-
     int32_t proporional_error = error;
 
     int32_t derivative_error = (error - previous_altitude_error);
@@ -84,21 +82,29 @@ void calculateAltitudeControl(void)
 
 void calculateYawControl(void)
 {
-    bool direction_clock_wise = false;
+    bool direction_clock_wise = true;
 
     int16_t error = getYawError();
 
     if (error < 0)
     {
-        direction_clock_wise = true;
+        direction_clock_wise = false;
         error *= -1;
     }
     if (error > 180)
     {
         error = 360 - error;
-        direction_clock_wise != direction_clock_wise;
+
+        if (direction_clock_wise)
+        {
+            direction_clock_wise = false;
+        }
+        else
+        {
+            direction_clock_wise = true;
+        }
     }
-    if (direction_clock_wise)
+    if (!direction_clock_wise)
     {
         error *= -1;
     }
@@ -110,13 +116,15 @@ void calculateYawControl(void)
 
     int32_t intergral_error_sum = sum_yaw_error + error;
 
-    int16_t control_output = YAW_KP * proporional_error + YAW_KD * derivative_error + YAW_KI * intergral_error_sum;
+    int32_t control_output = YAW_KP * proporional_error + YAW_KD * derivative_error + YAW_KI * intergral_error_sum;
     control_output /= CONTROL_DIVISOR;
 
     if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE))
     {
         sum_yaw_error = intergral_error_sum;
     }
+
+    error_temp_watch = sum_yaw_error;
 
     configureSecondaryRotor(control_output);
 
