@@ -21,6 +21,12 @@ static uint32_t kernel_frequency;
 static task_t* tasks;
 static uint8_t n_tasks;
 
+void kernelSysTickIntHandler(void)
+{
+    ADCProcessorTrigger(ADC0_BASE, 3);
+    g_ulSampCnt++;
+}
+
 void initKernel(uint32_t frequency)
 {
     kernel_frequency = frequency;
@@ -30,7 +36,7 @@ void initKernel(uint32_t frequency)
     SysTickPeriodSet(SysCtlClockGet() / kernel_frequency);
 
     // Register the interrupt handler
-    SysTickIntRegister(_kernelSysTickIntHandler);
+    SysTickIntRegister(kernelSysTickIntHandler);
 
     // Enable interrupt and device
     SysTickIntEnable();
@@ -41,11 +47,7 @@ void initKernel(uint32_t frequency)
     tasks = malloc(sizeof(task_t) * MAX_TASKS);
 }
 
-void _kernelSysTickIntHandler(void)
-{
-    ADCProcessorTrigger(ADC0_BASE, 3);
-    g_ulSampCnt++;
-}
+
 
 void kernelRegisterTask(uint16_t ticks, void (*run)(void), uint8_t priority)
 {

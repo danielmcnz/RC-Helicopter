@@ -22,7 +22,7 @@ typedef struct {
 
 void initKernel(uint32_t sample_rate);
 
-void _kernelSysTickIntHandler(void);
+void kernelSysTickIntHandler(void);
 
 void kernelRegisterTask(uint16_t ticks, void (*run)(void), uint8_t priority);
 
