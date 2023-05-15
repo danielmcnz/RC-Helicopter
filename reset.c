@@ -15,6 +15,9 @@ void resetIntHandler(void)
 {
     SysCtlReset();
     GPIOIntClear(GPIO_PORTA_BASE, GPIO_PIN_6);
+
+    static int16_t reset_int = 0;
+    reset_int++;
 }
 
 void initReset()

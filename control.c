@@ -9,11 +9,12 @@
 
 static uint8_t  control_update_freq;
 
-static uint32_t previous_altitude_error = 0;
-static uint32_t sum_altitude_error = 0;
+static int32_t previous_altitude_error = 0;
+static int32_t sum_altitude_error = 0;
 
-static uint16_t previous_yaw_error = 0;
-static uint32_t sum_yaw_error = 0;
+static int16_t previous_yaw_error = 0;
+static int32_t sum_yaw_error = 0;
+
 
 void calculateAltitudeControl(void);
 void calculateYawControl(void);
@@ -56,8 +57,6 @@ void updateControl(void)
     }
 }
 
-static int16_t error_temp_watch = 0;
-
 void calculateAltitudeControl(void)
 {
     int16_t error = getAltitudeError();
@@ -80,11 +79,16 @@ void calculateAltitudeControl(void)
     configureMainRotor(50+control_output);
 }
 
+static int16_t error_temp_watch = 0;
+static int16_t error_temp_watch_after = 0;
+
 void calculateYawControl(void)
 {
     bool direction_clock_wise = true;
 
     int16_t error = getYawError();
+
+    error_temp_watch = error;
 
     if (error < 0)
     {
@@ -109,6 +113,8 @@ void calculateYawControl(void)
         error *= -1;
     }
 
+    error_temp_watch_after = error;
+
     int32_t proporional_error = error;
 
     int32_t derivative_error = (error - previous_yaw_error);
@@ -123,8 +129,6 @@ void calculateYawControl(void)
     {
         sum_yaw_error = intergral_error_sum;
     }
-
-    error_temp_watch = sum_yaw_error;
 
     configureSecondaryRotor(control_output);
 

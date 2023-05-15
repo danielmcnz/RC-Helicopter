@@ -38,6 +38,9 @@ void altitudeIntHandler(void)
     //
     // Clean up, clearing the interrupt
     ADCIntClear(ADC0_BASE, 3);
+
+    static int16_t adc_int = 0;
+    adc_int++;
 }
 
 void _initADC(void)

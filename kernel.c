@@ -25,6 +25,9 @@ void kernelSysTickIntHandler(void)
 {
     ADCProcessorTrigger(ADC0_BASE, 3);
     g_ulSampCnt++;
+
+    static int16_t sys_tick_int = 0;
+    sys_tick_int++;
 }
 
 void initKernel(uint32_t frequency)

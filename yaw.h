@@ -25,7 +25,7 @@ typedef struct
 } YawPosition;
 
 // quadrature decoding states
-enum {
+typedef enum {
     INVALID = -1,
     LO_LO,
     HI_LO,
@@ -35,9 +35,9 @@ enum {
 
 void initYaw(void);
 
-// void YawIntHandler(void);
-
 void updateYaw(void);
+
+int16_t boundYawDeg(int16_t boundingVar);
 
 YawPosition getYaw(void);
 
