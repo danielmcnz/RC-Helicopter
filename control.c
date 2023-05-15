@@ -18,7 +18,8 @@ static int16_t previous_yaw_error = 0;
 static int32_t sum_yaw_error = 0;
 
 //static uint8_t slow_descent = 35;
-static uint32_t slow_rise = 250;
+static uint32_t slow_rise = 2500;
+static uint16_t count = 0;
 static uint8_t hover_point;
 static bool hover_reached = false;
 
@@ -32,7 +33,7 @@ void initControl(uint8_t update_freq)
 
 static bool hover_reached_blah;
 static uint32_t mean_val_uuuu;
-static int32_t init_val_uuuu;
+static uint16_t count_uu;
 
 void resetLoop(void);
 
@@ -47,7 +48,6 @@ void updateControl(void)
         int32_t init_val = getInitAltitude();
 
         mean_val_uuuu = mean_val;
-        init_val_uuuu = init_val;
 
         // go to hover and rotate to known reference point
         if (!hover_point)
@@ -55,12 +55,12 @@ void updateControl(void)
             if (mean_val > (init_val - 5))
             {
                 slow_rise++;
-                configureMainRotor(slow_rise/10);
+                configureMainRotor(slow_rise/100);
             }
             else
             {
                 hover_reached = true;
-                hover_point = slow_rise/10 - 2;
+                hover_point = slow_rise/100 - 2;
                 configureMainRotor(hover_point);
             }
         }
@@ -69,7 +69,8 @@ void updateControl(void)
 
         if (hover_reached)
         {
-            configureSecondaryRotor(30);
+            configureSecondaryRotor(50);
+//            resetDesiredYaw();
 
 
             if (getYawRef())
@@ -86,7 +87,19 @@ void updateControl(void)
 
         if(yaw_error < 5 && yaw_error > -5)
         {
-            configureMainRotor(hover_point - 10);
+            count++;
+        }
+        else
+        {
+            count = 0;
+        }
+
+        count_uu = count;
+
+        if (count >= 400)
+        {
+//            configureMainRotor(hover_point-2);
+            setDesiredAltitude(0);
 
             if(getAltitudePerc() <= 2)
             {
@@ -279,9 +292,7 @@ void resetLoop(void)
 
     previous_yaw_error = 0;
     sum_yaw_error = 0;
-
-    hover_reached = false;
-    slow_rise = 2500;
+    count = 0;
 
     resetYawRef();
     resetDesiredYaw();

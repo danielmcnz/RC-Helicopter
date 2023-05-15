@@ -153,7 +153,7 @@ YawPosition getYaw(void)
 
 void resetDesiredYaw(void)
 {
-    desired_yaw += -desired_yaw;
+    desired_yaw = 0;
 }
 
 void incrementYaw(void)
