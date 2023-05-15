@@ -57,127 +57,86 @@ void updateControl(void)
     }
 }
 
+//void calculateAltitudeControl(void)
+//{
+//    int16_t error = getAltitudeError();
+//
+//    int32_t proporional_error = error;
+//
+//    int32_t derivative_error = (error - previous_altitude_error);
+//    previous_altitude_error = error;
+//
+//    int32_t intergral_error_sum = sum_altitude_error + (error);
+//
+//    int32_t control_output = (ALTITUDE_KP * proporional_error) + (ALTITUDE_KD * derivative_error) + (ALTITUDE_KI * intergral_error_sum);
+//    control_output /= CONTROL_DIVISOR;
+//
+//    if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE))
+//    {
+//        sum_altitude_error = intergral_error_sum;
+//    }
+//
+//    configureMainRotor(50+control_output);
+//}
+
+static int32_t proportional_a = 0;
+static int32_t intergral_a = 0;
+static int32_t derivative_a = 0;
+static int32_t control_output_a = 0;
+static int32_t duty_cycle_a = 0;
+
 void calculateAltitudeControl(void)
 {
+
+    int32_t proporional;
+    int32_t derivative;
+    int32_t intergral;
+    int32_t control_output;
+
     int16_t error = getAltitudeError();
 
-    int32_t proporional_error = error;
+    int8_t duty_cycle;
 
-    int32_t derivative_error = (error - previous_altitude_error);
+    proporional = error * ALTITUDE_KP;
+
+    derivative = (error - previous_altitude_error) * ALTITUDE_KD;
     previous_altitude_error = error;
 
-    int32_t intergral_error_sum = sum_altitude_error + (error);
+    if (error > -20 && error < 20)
+    {
+        sum_altitude_error += error;
+    }
+    intergral = sum_altitude_error * ALTITUDE_KI;
 
-    int32_t control_output = (ALTITUDE_KP * proporional_error) + (ALTITUDE_KD * derivative_error) + (ALTITUDE_KI * intergral_error_sum);
+    control_output = 25000 + proporional + intergral - derivative;
     control_output /= CONTROL_DIVISOR;
 
-    if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE))
+    derivative_a = derivative;
+    intergral_a = intergral;
+    proportional_a = proporional;
+    control_output_a = control_output;
+
+    if(control_output > PWM_MAX_DUTY_CYCLE)
     {
-        sum_altitude_error = intergral_error_sum;
+        duty_cycle = PWM_MAX_DUTY_CYCLE;
+    }
+    else if (control_output < PWM_MIN_DUTY_CYCLE)
+    {
+        duty_cycle = PWM_MIN_DUTY_CYCLE;
+    }
+    else
+    {
+        duty_cycle = (uint8_t)control_output;
     }
 
-    configureMainRotor(50+control_output);
+    duty_cycle_a = duty_cycle;
+
+    configureMainRotor(duty_cycle);
 }
-
-// void calculateYawControl(void)
-// {
-//     bool direction_clock_wise = true;
-
-//     int32_t proporional;
-//     int32_t derivative;
-//     int32_t intergral;
-//     int32_t control_output;
-
-//     int16_t error = getYawError();
-    
-//     int8_t duty_cycle;
-
-//     if (error < 0)
-//     {
-//         direction_clock_wise = false;
-//         error *= -1;
-//     }
-//     if (error > 180)
-//     {
-//         error = 360 - error;
-
-//         if (direction_clock_wise)
-//         {
-//             direction_clock_wise = false;
-//         }
-//         else
-//         {
-//             direction_clock_wise = true;
-//         }
-//     }
-//     if (!direction_clock_wise)
-//     {
-//         error *= -1;
-//     }
-
-//     proporional = error * YAW_KP;
-// //    if (proporional > 10 * CONTROL_DIVISOR)
-// //    {
-// //        proporional = 10 * CONTROL_DIVISOR;
-// //    }
-// //    else if (proporional < -10 * CONTROL_DIVISOR)
-// //    {
-// //        proporional = -10 * CONTROL_DIVISOR;
-// //    }
-
-//     derivative = (error - previous_yaw_error) * YAW_KD;
-//     previous_yaw_error = error;
-// //    if (derivative > 10 * CONTROL_DIVISOR)
-// //    {
-// //        derivative = 10 * CONTROL_DIVISOR;
-// //    }
-// //    else if (derivative < -10 * CONTROL_DIVISOR)
-// //    {
-// //        derivative = -10 * CONTROL_DIVISOR;
-// //    }
-
-//     intergral = (sum_yaw_error + error) * YAW_KI;
-// //    if (intergral > 30 * CONTROL_DIVISOR)
-// //    {
-// //        intergral = 30 * CONTROL_DIVISOR;
-// //    }
-// //    else if (intergral < -30 * CONTROL_DIVISOR)
-// //    {
-// //        intergral = -30 * CONTROL_DIVISOR;
-// //    }
-
-//     // control_output = 25000 + proporional + derivative + intergral;
-//     control_output = proporional + derivative + intergral;
-//     control_output /= CONTROL_DIVISOR;
-
-//     if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE_TAIL))
-//     {
-//         sum_yaw_error = intergral;
-//     }
-
-//     error_temp_watch_after = control_output;
-
-//     if(control_output > PWM_MAX_DUTY_CYCLE)
-//     {
-//         duty_cycle = PWM_MAX_DUTY_CYCLE;
-//     }
-//     else if (control_output < PWM_MIN_DUTY_CYCLE_TAIL)
-//     {
-//         duty_cycle = PWM_MIN_DUTY_CYCLE_TAIL;
-//     }
-//     else
-//     {
-//         duty_cycle = (uint8_t)control_output;
-//     }
-
-//     error_temp_watch = duty_cycle;
-
-//     configureSecondaryRotor(duty_cycle);
-
-// }
 
 static int32_t proportional_w = 0;
 static int32_t intergral_w = 0;
+static int32_t derivative_w = 0;
 static int32_t control_output_w = 0;
 static int32_t duty_cycle_w = 0;
 
@@ -219,18 +178,31 @@ void calculateYawControl(void)
 
     proporional = error * YAW_KP;
 
-    // derivative = (error - previous_yaw_error) * YAW_KD;
-    // previous_yaw_error = error;
+    derivative = (error - previous_yaw_error) * YAW_KD;
+    previous_yaw_error = error;
 
     if (error > -20 && error < 20)
     {
+//        if (error > 30)
+//        {
+//            sum_yaw_error += 30;
+//        }
+//        else if (error < -30)
+//        {
+//            sum_yaw_error -= 30;
+//        }
+//        else
+//        {
+//            sum_yaw_error += error;
+//        }
         sum_yaw_error += error;
     }
     intergral = sum_yaw_error * YAW_KI;
 
-    control_output = 25000 + proporional + intergral;
+    control_output = 25000 + proporional + intergral - derivative;
     control_output /= CONTROL_DIVISOR;
 
+    derivative_w = derivative;
     intergral_w = intergral;
     proportional_w = proporional;
     control_output_w = control_output;

@@ -105,7 +105,7 @@ void initYaw(void)
 
     // GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
 
-    // IntEnable(INT_GPIOC);
+    IntEnable(INT_GPIOC);
 }
 
 int16_t boundYawDeg(int16_t boundingVar)
