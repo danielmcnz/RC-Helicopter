@@ -5,12 +5,11 @@
 #include "yaw.h"
 #include "heliState.h"
 
-#define PID_SCALING_FACTOR 100
-#define CONTROL_DIVISOR PID_SCALING_FACTOR * 10
+#define CONTROL_DIVISOR 1000
 
 static uint8_t  control_update_freq;
 
-static uint16_t previous_altitude_error = 0;
+static uint32_t previous_altitude_error = 0;
 static uint32_t sum_altitude_error = 0;
 
 static uint16_t previous_yaw_error = 0;
@@ -34,11 +33,13 @@ void updateControl(void)
 
         configureSecondaryRotor(60);
 
-        if(getYawRef())
-        {
-            stopRotors();
-            // configureSecondaryRotor(20);
-        }
+
+        setHeliState(FLYING);
+        // if(getYawRef())
+        // {
+        //     stopRotors();
+        //     // setHeliState(FLYING);
+        // }
     }
     else if(getHeliState() == LANDING)
     {
@@ -63,11 +64,14 @@ void calculateAltitudeControl(void)
 
     error_temp_watch = error;
 
-    int16_t proporional_error = error * PID_SCALING_FACTOR;
-    int16_t derivative_error = (error - previous_altitude_error) * control_update_freq * PID_SCALING_FACTOR;
-    int32_t intergral_error_sum = sum_altitude_error + (error * PID_SCALING_FACTOR) / control_update_freq;
+    int32_t proporional_error = error;
 
-    int16_t control_output = (ALTITUDE_KP * proporional_error) + (ALTITUDE_KD * derivative_error) + (ALTITUDE_KI * intergral_error_sum);
+    int32_t derivative_error = (error - previous_altitude_error);
+    previous_altitude_error = error;
+
+    int32_t intergral_error_sum = sum_altitude_error + (error);
+
+    int32_t control_output = (ALTITUDE_KP * proporional_error) + (ALTITUDE_KD * derivative_error) + (ALTITUDE_KI * intergral_error_sum);
     control_output /= CONTROL_DIVISOR;
 
     if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE))
@@ -75,18 +79,16 @@ void calculateAltitudeControl(void)
         sum_altitude_error = intergral_error_sum;
     }
 
-    previous_altitude_error = error;
-
-    configureMainRotor(control_output);
+    configureMainRotor(50+control_output);
 }
 
 void calculateYawControl(void)
 {
     int16_t error = getYawError();
 
-    int16_t proporional_error = error * PID_SCALING_FACTOR;
-    int16_t derivative_error = (error - previous_yaw_error) * control_update_freq * PID_SCALING_FACTOR;
-    int32_t intergral_error_sum = sum_yaw_error + (error * PID_SCALING_FACTOR) / control_update_freq;
+    int32_t proporional_error = error;
+    int32_t derivative_error = (error - previous_yaw_error);
+    int32_t intergral_error_sum = sum_yaw_error + error;
 
     int16_t control_output = YAW_KP * proporional_error + YAW_KD * derivative_error + YAW_KI * intergral_error_sum;
     control_output /= CONTROL_DIVISOR;
@@ -98,6 +100,6 @@ void calculateYawControl(void)
 
     previous_yaw_error = error;
 
-    configureSecondaryRotor(control_output);
+    configureSecondaryRotor(50+control_output);
 
 }

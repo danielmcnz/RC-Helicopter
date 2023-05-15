@@ -25,7 +25,7 @@
 void initRotors(void);
 
 // sets the period and duty cycle for the main rotor, bounded between the constraints if nessecary
-void configureMainRotor(int16_t duty_cycle);
+void configureMainRotor(int32_t duty_cycle);
 
 // sets the period and duty cycle for the secondary rotor, bounded between the constraints if nessecary
 void configureSecondaryRotor(int16_t duty_cycle);

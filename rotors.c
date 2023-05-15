@@ -56,6 +56,7 @@ static uint8_t secondary_rotor_duty_cycle = 0;
 
 
 static int16_t temp_var_watch = 0;
+static int16_t temp_var_watch_after = 0;
 
 void initRotors(void)
 {
@@ -118,7 +119,7 @@ static void _initSecondaryRotor(void)
     configureSecondaryRotor(DEFAULT_SECONDARY_ROTOR_DUTY_CYCLE);
 }
 
-void configureMainRotor(int16_t duty_cycle)
+void configureMainRotor(int32_t duty_cycle)
 {
     temp_var_watch = duty_cycle;
 
@@ -131,7 +132,7 @@ void configureMainRotor(int16_t duty_cycle)
     {
         duty_cycle = PWM_MIN_DUTY_CYCLE;
     }
-
+    temp_var_watch = duty_cycle;
     main_rotor_duty_cycle = (uint8_t)duty_cycle;
 
     // period = clock rate / 2 / rotor frequency
@@ -193,11 +194,13 @@ void stopRotors(void)
 static void _stopMainRotor(void)
 {
     PWMOutputState(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUTBIT, false);
+    main_rotor_duty_cycle = 0;
 }
 
 static void _stopSecondaryRotor(void)
 {
     PWMOutputState(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUTBIT, false);
+    secondary_rotor_duty_cycle = 0;
 }
 
 uint8_t getMainRotorDutyCycle(void)

@@ -7,9 +7,11 @@
 
 #include "yaw.h"
 
+#include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
+#include "driverlib/interrupt.h"
 
 static int16_t yaw;
 static YawPosition yaw_pos;
@@ -40,25 +42,33 @@ void initYaw(void)
 
     GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_4);
 
-    GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_RISING_EDGE);
+    GPIOPadConfigSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_STRENGTH_2MA,
+                GPIO_PIN_TYPE_STD_WPU);
+
+    GPIODirModeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_DIR_MODE_IN);
+
+    GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_FALLING_EDGE);
 
     GPIOIntRegister(GPIO_PORTC_BASE, YawRefIntHandler);
 
     GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
 
     GPIOIntEnable(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    IntEnable(INT_GPIOC);
 }
 
 void YawRefIntHandler(void)
 {
-    int signalRef= GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_4);
-
-    if(!signalRef)
-        yawRef = false;
-    else
-        yawRef = true;
-
     GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    // bool signalRef = GPIO_PIN_4 && GPIOIntStatus(GPIO_PORTC_BASE, false);
+
+    // if(signalRef)
+    yawRef = true;
+    //else
+        //yawRef = false;
+
 }
 
 void YawIntHandler(void)
