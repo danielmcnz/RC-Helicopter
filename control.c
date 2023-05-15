@@ -79,7 +79,104 @@ void calculateAltitudeControl(void)
     configureMainRotor(50+control_output);
 }
 
-static int16_t error_temp_watch = 0;
+// void calculateYawControl(void)
+// {
+//     bool direction_clock_wise = true;
+
+//     int32_t proporional;
+//     int32_t derivative;
+//     int32_t intergral;
+//     int32_t control_output;
+
+//     int16_t error = getYawError();
+    
+//     int8_t duty_cycle;
+
+//     if (error < 0)
+//     {
+//         direction_clock_wise = false;
+//         error *= -1;
+//     }
+//     if (error > 180)
+//     {
+//         error = 360 - error;
+
+//         if (direction_clock_wise)
+//         {
+//             direction_clock_wise = false;
+//         }
+//         else
+//         {
+//             direction_clock_wise = true;
+//         }
+//     }
+//     if (!direction_clock_wise)
+//     {
+//         error *= -1;
+//     }
+
+//     proporional = error * YAW_KP;
+// //    if (proporional > 10 * CONTROL_DIVISOR)
+// //    {
+// //        proporional = 10 * CONTROL_DIVISOR;
+// //    }
+// //    else if (proporional < -10 * CONTROL_DIVISOR)
+// //    {
+// //        proporional = -10 * CONTROL_DIVISOR;
+// //    }
+
+//     derivative = (error - previous_yaw_error) * YAW_KD;
+//     previous_yaw_error = error;
+// //    if (derivative > 10 * CONTROL_DIVISOR)
+// //    {
+// //        derivative = 10 * CONTROL_DIVISOR;
+// //    }
+// //    else if (derivative < -10 * CONTROL_DIVISOR)
+// //    {
+// //        derivative = -10 * CONTROL_DIVISOR;
+// //    }
+
+//     intergral = (sum_yaw_error + error) * YAW_KI;
+// //    if (intergral > 30 * CONTROL_DIVISOR)
+// //    {
+// //        intergral = 30 * CONTROL_DIVISOR;
+// //    }
+// //    else if (intergral < -30 * CONTROL_DIVISOR)
+// //    {
+// //        intergral = -30 * CONTROL_DIVISOR;
+// //    }
+
+//     // control_output = 25000 + proporional + derivative + intergral;
+//     control_output = proporional + derivative + intergral;
+//     control_output /= CONTROL_DIVISOR;
+
+//     if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE_TAIL))
+//     {
+//         sum_yaw_error = intergral;
+//     }
+
+//     error_temp_watch_after = control_output;
+
+//     if(control_output > PWM_MAX_DUTY_CYCLE)
+//     {
+//         duty_cycle = PWM_MAX_DUTY_CYCLE;
+//     }
+//     else if (control_output < PWM_MIN_DUTY_CYCLE_TAIL)
+//     {
+//         duty_cycle = PWM_MIN_DUTY_CYCLE_TAIL;
+//     }
+//     else
+//     {
+//         duty_cycle = (uint8_t)control_output;
+//     }
+
+//     error_temp_watch = duty_cycle;
+
+//     configureSecondaryRotor(duty_cycle);
+
+// }
+
+static int8_t error_temp_watch = 0;
 static int16_t error_temp_watch_after = 0;
 
 void calculateYawControl(void)
@@ -119,44 +216,18 @@ void calculateYawControl(void)
     }
 
     proporional = error * YAW_KP;
-//    if (proporional > 10 * CONTROL_DIVISOR)
-//    {
-//        proporional = 10 * CONTROL_DIVISOR;
-//    }
-//    else if (proporional < -10 * CONTROL_DIVISOR)
-//    {
-//        proporional = -10 * CONTROL_DIVISOR;
-//    }
 
-    derivative = (error - previous_yaw_error) * YAW_KD;
-    previous_yaw_error = error;
-//    if (derivative > 10 * CONTROL_DIVISOR)
-//    {
-//        derivative = 10 * CONTROL_DIVISOR;
-//    }
-//    else if (derivative < -10 * CONTROL_DIVISOR)
-//    {
-//        derivative = -10 * CONTROL_DIVISOR;
-//    }
+    // derivative = (error - previous_yaw_error) * YAW_KD;
+    // previous_yaw_error = error;
 
-    intergral = (sum_yaw_error + error) * YAW_KI;
-//    if (intergral > 30 * CONTROL_DIVISOR)
-//    {
-//        intergral = 30 * CONTROL_DIVISOR;
-//    }
-//    else if (intergral < -30 * CONTROL_DIVISOR)
-//    {
-//        intergral = -30 * CONTROL_DIVISOR;
-//    }
-
-    // control_output = 25000 + proporional + derivative + intergral;
-    control_output = proporional + derivative + intergral;
-    control_output /= CONTROL_DIVISOR;
-
-    if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE_TAIL))
+    if (error > -10 && error < 10)
     {
-        sum_yaw_error = intergral;
+        sum_altitude_error += error;
     }
+    intergral = sum_altitude_error * YAW_KI;
+
+    control_output = 25000 + proporional + intergral;
+    control_output /= CONTROL_DIVISOR;
 
     error_temp_watch_after = control_output;
 
