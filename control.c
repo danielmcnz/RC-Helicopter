@@ -9,12 +9,16 @@
 
 static uint8_t  control_update_freq;
 
+static int16_t yaw_error = 0;
+
 static int32_t previous_altitude_error = 0;
 static int32_t sum_altitude_error = 0;
 
 static int16_t previous_yaw_error = 0;
 static int32_t sum_yaw_error = 0;
 
+static uint8_t slow_rise = 25;
+static uint16_t mean_val_prev = 0;
 
 void calculateAltitudeControl(void);
 void calculateYawControl(void);
@@ -28,19 +32,24 @@ void updateControl(void)
 {
     if(getHeliState() == TAKING_OFF)
     {
+        uint16_t mean_val = getMeanAltitude();
+
         // go to hover and rotate to known reference point
+        if (mean_val_prev == 0 || (mean_val_prev - mean_val) == 0)
+        {
+            slow_rise++;
+            configureMainRotor(slow_rise);
+            mean_val_prev = mean_val;
+        }
+        else if (mean_val_prev != 0 && (mean_val_prev - mean_val) != 0)
+        {
+            configureMainRotor(slow_rise);
+        }
 
-        configureMainRotor(50);
-
-        configureSecondaryRotor(60);
-
-
-        setHeliState(FLYING);
-        // if(getYawRef())
-        // {
-        //     stopRotors();
-        //     // setHeliState(FLYING);
-        // }
+        if (yaw_error < 5 && yaw_error > -5)
+        {
+            incrementYaw();
+        }
     }
     else if(getHeliState() == LANDING)
     {
@@ -108,6 +117,7 @@ void calculateAltitudeControl(void)
     }
     intergral = sum_altitude_error * ALTITUDE_KI;
 
+    // control_output = (slow_rise * CONTROL_DIVISOR) + proporional + intergral - derivative;
     control_output = 25000 + proporional + intergral - derivative;
     control_output /= CONTROL_DIVISOR;
 
@@ -149,18 +159,18 @@ void calculateYawControl(void)
     int32_t intergral;
     int32_t control_output;
 
-    int16_t error = getYawError();
+    yaw_error = getYawError();
     
     int8_t duty_cycle;
 
-    if (error < 0)
+    if (yaw_error < 0)
     {
         direction_clock_wise = false;
-        error *= -1;
+        yaw_error *= -1;
     }
-    if (error > 180)
+    if (yaw_error > 180)
     {
-        error = 360 - error;
+        yaw_error = 360 - yaw_error;
 
         if (direction_clock_wise)
         {
@@ -173,15 +183,15 @@ void calculateYawControl(void)
     }
     if (!direction_clock_wise)
     {
-        error *= -1;
+        yaw_error *= -1;
     }
 
-    proporional = error * YAW_KP;
+    proporional = yaw_error * YAW_KP;
 
-    derivative = (error - previous_yaw_error) * YAW_KD;
-    previous_yaw_error = error;
+    derivative = (yaw_error - previous_yaw_error) * YAW_KD;
+    previous_yaw_error = yaw_error;
 
-    if (error > -20 && error < 20)
+    if (yaw_error > -20 && yaw_error < 20)
     {
 //        if (error > 30)
 //        {
@@ -195,7 +205,7 @@ void calculateYawControl(void)
 //        {
 //            sum_yaw_error += error;
 //        }
-        sum_yaw_error += error;
+        sum_yaw_error += yaw_error;
     }
     intergral = sum_yaw_error * YAW_KI;
 

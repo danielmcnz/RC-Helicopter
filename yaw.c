@@ -6,6 +6,7 @@
  */
 
 #include "yaw.h"
+#include "heliState.h"
 
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -24,13 +25,12 @@ void YawRefIntHandler(void)
 {
     GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
 
-    // bool signalRef = GPIO_PIN_4 && GPIOIntStatus(GPIO_PORTC_BASE, false);
-
-    // if(signalRef)
-    yawRef = true;
-    //else
-        //yawRef = false;
-
+    if (getHeliState() == TAKING_OFF)
+    {
+        yaw = 0;
+        desired_yaw = 0;
+        setHeliState(FLYING);
+    }
 }
 
 void YawIntHandler(void)
@@ -181,4 +181,9 @@ int16_t getYawError(void)
 bool getYawRef()
 {
     return yawRef;
+}
+
+void resetYaw(void)
+{
+    yaw = 0;
 }

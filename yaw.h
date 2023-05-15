@@ -48,5 +48,6 @@ int16_t getDesiredYaw(void);
 int16_t getYawError(void);
 
 bool getYawRef();
+void resetYaw(void);
 
 #endif /* YAW_H_ */
