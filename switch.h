@@ -14,7 +14,7 @@ typedef struct
 {
     bool switch_position;
     bool check_switch_position;
-    bool switch_changed;
+    bool switch_changed = false;
 } switch_t;
 
 
