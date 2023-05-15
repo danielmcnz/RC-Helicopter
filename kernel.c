@@ -71,9 +71,9 @@ void kernelRegisterTask(uint16_t ticks, void (*run)(void), uint8_t priority)
 void kernelRun(void)
 {
     uint8_t task;
-    for(task=0;task <= n_tasks; ++task)
+    for(task=0;task < n_tasks; ++task)
     {
-         if(tasks[task].cur_tick == 0)
+         if(tasks[task].cur_tick <= 0)
          {
             tasks[task].run();
 

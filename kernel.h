@@ -17,7 +17,7 @@ typedef struct {
     uint16_t ticks;
     uint8_t priority;
     void (*run)(void);
-    uint16_t cur_tick;
+    int16_t cur_tick;
 } task_t;
 
 void initKernel(uint32_t sample_rate);
