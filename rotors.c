@@ -152,9 +152,9 @@ void configureSecondaryRotor(int16_t duty_cycle)
     {
         duty_cycle = PWM_MAX_DUTY_CYCLE;
     }
-    else if (duty_cycle < PWM_MIN_DUTY_CYCLE)
+    else if (duty_cycle < PWM_MIN_DUTY_CYCLE_TAIL)
     {
-        duty_cycle = PWM_MIN_DUTY_CYCLE;
+        duty_cycle = PWM_MIN_DUTY_CYCLE_TAIL;
     }
 
     secondary_rotor_duty_cycle = (uint8_t)duty_cycle;

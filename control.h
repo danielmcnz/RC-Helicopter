@@ -8,9 +8,9 @@
 #define ALTITUDE_KD 800
 #define ALTITUDE_KI 12
 
-#define YAW_KP 5
-#define YAW_KD 3
-#define YAW_KI 2
+#define YAW_KP 800
+#define YAW_KD 800
+#define YAW_KI 9
 
 void initControl(uint8_t update_freq);
 
