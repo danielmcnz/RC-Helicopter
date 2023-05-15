@@ -17,10 +17,10 @@ static int32_t sum_altitude_error = 0;
 static int16_t previous_yaw_error = 0;
 static int32_t sum_yaw_error = 0;
 
-static uint8_t slow_rise = 25;
+//static uint8_t slow_descent = 35;
+static uint32_t slow_rise = 250;
 static uint8_t hover_point;
 static bool hover_reached = false;
-static uint16_t mean_val_prev = 0;
 
 void calculateAltitudeControl(void);
 void calculateYawControl(void);
@@ -30,51 +30,76 @@ void initControl(uint8_t update_freq)
     control_update_freq = update_freq;
 }
 
+static bool hover_reached_blah;
+static uint32_t mean_val_uuuu;
+static int32_t init_val_uuuu;
+
+void resetLoop(void);
+
 void updateControl(void)
 {
+    calculateAltitudeControl();
+    calculateYawControl();
+
     if(getHeliState() == TAKING_OFF)
     {
-        uint16_t mean_val = getMeanAltitude();
+        uint32_t mean_val = getMeanAltitude();
+        int32_t init_val = getInitAltitude();
+
+        mean_val_uuuu = mean_val;
+        init_val_uuuu = init_val;
 
         // go to hover and rotate to known reference point
-        if (mean_val_prev == 0 || (mean_val_prev - mean_val) == 0)
+        if (!hover_point)
         {
-            slow_rise++;
-            configureMainRotor(slow_rise);
-            mean_val_prev = mean_val;
-        }
-        else if ((mean_val_prev != 0 && (mean_val_prev - mean_val) != 0) && !hover_point)
-        {
-            hover_reached = true;
-            hover_point = slow_rise;
-            configureMainRotor(hover_point);
+            if (mean_val > (init_val - 5))
+            {
+                slow_rise++;
+                configureMainRotor(slow_rise/10);
+            }
+            else
+            {
+                hover_reached = true;
+                hover_point = slow_rise/10 - 2;
+                configureMainRotor(hover_point);
+            }
         }
 
-        if (yaw_error < 5 && yaw_error > -5)
+        hover_reached_blah = hover_reached;
+
+        if (hover_reached)
         {
-            incrementYaw();
+            configureSecondaryRotor(30);
+
+
+            if (getYawRef())
+            {
+                resetDesiredYaw();
+                setHeliState(FLYING);
+            }
         }
     }
     else if(getHeliState() == LANDING)
     {
         // go to hover and rotate to known reference point, then land
-        setDesiredYaw(0);
+        resetDesiredYaw();
 
-        if(getDesiredYaw() == 0)
+        if(yaw_error < 5 && yaw_error > -5)
         {
-            setHeliState(LANDED);
-            stopRotors();
+            configureMainRotor(hover_point - 10);
+
+            if(getAltitudePerc() <= 2)
+            {
+                setHeliState(LANDED);
+                resetLoop();
+                stopRotors();
+            }
         }
     }
-    else if(getHeliState() == FLYING)
-    {
-        calculateAltitudeControl();
-        calculateYawControl();
-    }
-    else
-    {
-        stopRotors();
-    }
+//    else
+//    {
+//        stopRotors();
+//    }
 }
 
 //void calculateAltitudeControl(void)
@@ -129,7 +154,7 @@ void calculateAltitudeControl(void)
     intergral = sum_altitude_error * ALTITUDE_KI;
 
     // control_output = (slow_rise * CONTROL_DIVISOR) + proporional + intergral - derivative;
-    control_output = 25000 + proporional + intergral - derivative;
+    control_output = (hover_point * CONTROL_DIVISOR) + proporional + intergral - derivative;
     control_output /= CONTROL_DIVISOR;
 
     derivative_a = derivative;
@@ -245,4 +270,20 @@ void calculateYawControl(void)
 
     configureSecondaryRotor(duty_cycle);
 
+}
+
+void resetLoop(void)
+{
+    previous_altitude_error = 0;
+    sum_altitude_error = 0;
+
+    previous_yaw_error = 0;
+    sum_yaw_error = 0;
+
+    hover_reached = false;
+    slow_rise = 2500;
+
+    resetYawRef();
+    resetDesiredYaw();
+    setDesiredAltitude(0);
 }

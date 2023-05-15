@@ -17,6 +17,7 @@ static int32_t init_mean_altitude; // initial altitude value
 static uint32_t mean_altitude;
 static int16_t percentage_val = 0;
 static int16_t desired_altitude = 0;
+static int16_t init_altitude = 0;
 
 //*****************************************************************************
 //
@@ -166,4 +167,14 @@ uint16_t getDesiredAltitude(void)
 int16_t getAltitudeError(void)
 {
     return getDesiredAltitude() - getAltitudePerc();
+}
+
+int32_t getInitAltitude(void)
+{
+    return init_mean_altitude;
+}
+
+void setDesiredAltitude(int16_t desired)
+{
+    desired_altitude = desired;
 }

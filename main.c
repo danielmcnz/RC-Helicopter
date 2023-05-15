@@ -42,7 +42,7 @@
 
 #define ALTITUDE_UPDATE_FREQUENCY 150
 #define YAW_UPDATE_FREQUENCY 150
-#define INPUT_UPDATE_FREQUENCY 10
+#define INPUT_UPDATE_FREQUENCY 50
 #define DISPLAY_UPDATE_FREQUENCY 4
 #define CONTROL_UPDATE_FREQUENCY 20
 #define UART_UPDATE_FREQUENCY 4
@@ -72,9 +72,6 @@ void initialize(void)
     IntMasterEnable();
 }
 
-static bool test = false;
-static bool test2 = false;
-
 void updateInput(void)
 {
     updateButtons();
@@ -100,20 +97,17 @@ void updateInput(void)
         }
     }
 
-    if(checkSwitch() == SWITCH_UP && getHeliState() == LANDED)
+    switch_state_t switch_1_input = checkSwitch();
+
+    if(switch_1_input == SWITCH_UP && getHeliState() == LANDED)
     {
         setHeliState(TAKING_OFF);
         startRotors();
     }
-    if(checkSwitch() == SWITCH_DOWN)
-        {
-            test = true;
-            if(getHeliState() == FLYING)
-            {
-                test2 = true;
-                setHeliState(LANDING);
-            }
-        }
+    else if (switch_1_input == SWITCH_DOWN && getHeliState() == FLYING)
+    {
+        setHeliState(LANDING);
+    }
 }
 
 int main(void)

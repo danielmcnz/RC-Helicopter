@@ -19,6 +19,7 @@ void initSwitch(void)
     GPIOPinTypeGPIOInput(PORT_BASE_SWITCH_1, PIN_SWITCH_1);
     GPIOPadConfigSet(PORT_BASE_SWITCH_1, PIN_SWITCH_1, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
     switch_1.switch_position = GPIOPinRead(PORT_BASE_SWITCH_1, PIN_SWITCH_1) == PIN_SWITCH_1;
+    switch_1.switch_changed = false;
 }
 
 void updateSwitch(void)

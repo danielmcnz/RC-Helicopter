@@ -27,9 +27,9 @@ void YawRefIntHandler(void)
 
     if (getHeliState() == TAKING_OFF)
     {
+        yawRef = true;
         yaw = 0;
         desired_yaw = 0;
-        setHeliState(FLYING);
     }
 }
 
@@ -151,6 +151,10 @@ YawPosition getYaw(void)
     return yaw_pos;
 }
 
+void resetDesiredYaw(void)
+{
+    desired_yaw += -desired_yaw;
+}
 
 void incrementYaw(void)
 {
@@ -178,17 +182,17 @@ int16_t getYawError(void)
     return degree_error;
 }
 
-bool getYawRef()
+bool getYawRef(void)
 {
     return yawRef;
+}
+
+void resetYawRef(void)
+{
+    yawRef = false;
 }
 
 void resetYaw(void)
 {
     yaw = 0;
-}
-
-void setDesiredYaw(int16_t desired)
-{
-    desired_yaw = desired;
 }
