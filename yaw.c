@@ -19,6 +19,7 @@ static YawPosition yaw_pos;
 static bool yawRef = false;
 
 static int16_t desired_yaw = 0;
+static int16_t degree_error = 0;
 
 void YawIntHandler(void);
 void YawRefIntHandler(void);
@@ -109,6 +110,18 @@ void YawIntHandler(void)
     GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 }
 
+void boundYawDeg(int16_t boundingVar)
+{
+    if((boundingVar > MAX_YAW))
+    {
+        boundingVar -= FULL_ROTATION;
+    }
+    else if(boundingVar <= MIN_YAW)
+    {
+        boundingVar += FULL_ROTATION;
+    }
+}
+
 void updateYaw(void)
 {
     // convert yaw to a range between 0 to 360 degrees from gpio value
@@ -121,14 +134,7 @@ void updateYaw(void)
         yaw_pos.sub_degree = -yaw_pos.sub_degree;
 
     // constrain yaw between -180 to 180 degrees
-    if((yaw_pos.degree > MAX_YAW))
-    {
-        yaw_pos.degree = yaw_pos.degree - FULL_ROTATION;
-    }
-    else if(yaw_pos.degree <= MIN_YAW)
-    {
-        yaw_pos.degree = yaw_pos.degree + FULL_ROTATION;
-    }
+    boundYawDeg(yaw_pos.degree);
 }
 
 YawPosition getYaw(void)
@@ -141,28 +147,14 @@ void incrementYaw(void)
 {
     desired_yaw += YAW_INCREMENT;
 
-    if((desired_yaw > MAX_YAW))
-    {
-        desired_yaw -= FULL_ROTATION;
-    }
-    else if(desired_yaw <= MIN_YAW)
-    {
-        desired_yaw += FULL_ROTATION;
-    }
+    boundYawDeg(desired_yaw);
 }
 
 void decrementYaw(void)
 {
     desired_yaw -= YAW_INCREMENT;
 
-    if((desired_yaw > MAX_YAW))
-    {
-        desired_yaw -= FULL_ROTATION;
-    }
-    else if(desired_yaw <= MIN_YAW)
-    {
-        desired_yaw += FULL_ROTATION;
-    }
+    boundYawDeg(desired_yaw);
 }
 
 int16_t getDesiredYaw(void)
@@ -172,16 +164,9 @@ int16_t getDesiredYaw(void)
 
 int16_t getYawError(void)
 {
-    int16_t degree_error = getDesiredYaw() - getYaw().degree;
+    degree_error = getDesiredYaw() - getYaw().degree;
 
-    if((degree_error > MAX_YAW))
-    {
-        degree_error -= FULL_ROTATION;
-    }
-    else if(degree_error <= MIN_YAW)
-    {
-        degree_error += FULL_ROTATION;
-    }
+    boundYawDeg(degree_error);
 
     return degree_error;
 }
