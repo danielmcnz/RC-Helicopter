@@ -11,8 +11,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "yaw.h"
-
 #define CLK_FREQUENCY 100000000
 #define CLK_DELAY_DIVISOR 64000
 #define DISPLAY_DELAY CLK_FREQUENCY / CLK_DELAY_DIVISOR // delay between display updates
@@ -25,7 +23,5 @@ void initDisplay(void);
 void updateDisplay();
 
 void clearDisplayLine(uint8_t line);
-
-void incDisplayState(void);
 
 #endif /* DISPLAY_H_ */

@@ -173,7 +173,7 @@ int16_t getYawError(void)
 {
     int16_t degree_error = getDesiredYaw() - getYaw().degree;
 
-    return boundYawDeg(degree_error);
+    return boundYawDeg(degree_error + 180);
 }
 
 bool getYawRef()

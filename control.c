@@ -119,36 +119,37 @@ void calculateYawControl(void)
     }
 
     proporional = error * YAW_KP;
-    if (proporional > 10 * CONTROL_DIVISOR)
-    {
-        proporional = 10 * CONTROL_DIVISOR;
-    }
-    else if (proporional < -10 * CONTROL_DIVISOR)
-    {
-        proporional = -10 * CONTROL_DIVISOR;
-    }
+//    if (proporional > 10 * CONTROL_DIVISOR)
+//    {
+//        proporional = 10 * CONTROL_DIVISOR;
+//    }
+//    else if (proporional < -10 * CONTROL_DIVISOR)
+//    {
+//        proporional = -10 * CONTROL_DIVISOR;
+//    }
 
     derivative = (error - previous_yaw_error) * YAW_KD;
     previous_yaw_error = error;
-    if (derivative > 10 * CONTROL_DIVISOR)
-    {
-        derivative = 10 * CONTROL_DIVISOR;
-    }
-    else if (derivative < -10 * CONTROL_DIVISOR)
-    {
-        derivative = -10 * CONTROL_DIVISOR;
-    }
+//    if (derivative > 10 * CONTROL_DIVISOR)
+//    {
+//        derivative = 10 * CONTROL_DIVISOR;
+//    }
+//    else if (derivative < -10 * CONTROL_DIVISOR)
+//    {
+//        derivative = -10 * CONTROL_DIVISOR;
+//    }
 
     intergral = (sum_yaw_error + error) * YAW_KI;
-    if (intergral > 30 * CONTROL_DIVISOR)
-    {
-        intergral = 30 * CONTROL_DIVISOR;
-    }
-    else if (intergral < -30 * CONTROL_DIVISOR)
-    {
-        intergral = -30 * CONTROL_DIVISOR;
-    }
+//    if (intergral > 30 * CONTROL_DIVISOR)
+//    {
+//        intergral = 30 * CONTROL_DIVISOR;
+//    }
+//    else if (intergral < -30 * CONTROL_DIVISOR)
+//    {
+//        intergral = -30 * CONTROL_DIVISOR;
+//    }
 
+    // control_output = 25000 + proporional + derivative + intergral;
     control_output = proporional + derivative + intergral;
     control_output /= CONTROL_DIVISOR;
 
@@ -156,6 +157,8 @@ void calculateYawControl(void)
     {
         sum_yaw_error = intergral;
     }
+
+    error_temp_watch_after = control_output;
 
     if(control_output > PWM_MAX_DUTY_CYCLE)
     {
