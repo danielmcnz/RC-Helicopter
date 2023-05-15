@@ -87,6 +87,7 @@ void calculateYawControl(void)
     bool direction_clock_wise = true;
 
     int16_t error = getYawError();
+    int8_t duty_cycle;
 
     if (error < 0)
     {
@@ -114,28 +115,57 @@ void calculateYawControl(void)
     error_temp_watch = error;
 
     int32_t proporional = error * YAW_KP;
-    if (10 * CONTROL_DIVISOR < proporional)
+    if (proporional > 10 * CONTROL_DIVISOR)
     {
         proporional = 10 * CONTROL_DIVISOR;
     }
-    elif (-10 * CONTROL_DIVISOR > proporional)
+    else if (proporional < -10 * CONTROL_DIVISOR)
     {
         proporional = -10 * CONTROL_DIVISOR;
     }
 
-    int32_t derivative_error = (error - previous_yaw_error) * YAW_KD;
+    int32_t derivative = (error - previous_yaw_error) * YAW_KD;
     previous_yaw_error = error;
+    if (derivative > 10 * CONTROL_DIVISOR)
+    {
+        derivative = 10 * CONTROL_DIVISOR;
+    }
+    else if (derivative < -10 * CONTROL_DIVISOR)
+    {
+        derivative = -10 * CONTROL_DIVISOR;
+    }
 
-    int32_t intergral_error_sum = sum_yaw_error + error;
+    int32_t intergral = (sum_yaw_error + error) * YAW_KI;
+    if (intergral > 30 * CONTROL_DIVISOR)
+    {
+        intergral = 30 * CONTROL_DIVISOR;
+    }
+    else if (intergral < -30 * CONTROL_DIVISOR)
+    {
+        intergral = -30 * CONTROL_DIVISOR;
+    }
 
-    int32_t control_output = proporional+ YAW_KD * derivative_error + YAW_KI * intergral_error_sum;
+    int32_t control_output = proporional + derivative + intergral;
     control_output /= CONTROL_DIVISOR;
 
     if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE))
     {
-        sum_yaw_error = intergral_error_sum;
+        sum_yaw_error = intergral;
     }
 
-    configureSecondaryRotor(control_output);
+    if(control_output > PWM_MAX_DUTY_CYCLE)
+    {
+        duty_cycle = PWM_MAX_DUTY_CYCLE;
+    }
+    else if (control_output < PWM_MIN_DUTY_CYCLE_TAIL)
+    {
+        duty_cycle = PWM_MIN_DUTY_CYCLE_TAIL;
+    }
+    else
+    {
+        duty_cycle = (uint8_t)control_output;
+    }
+
+    configureSecondaryRotor(duty_cycle);
 
 }

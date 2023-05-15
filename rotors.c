@@ -139,21 +139,11 @@ void configureMainRotor(int32_t duty_cycle)
     PWMPulseWidthSet(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUT, period * main_rotor_duty_cycle / 100);
 }
 
-void configureSecondaryRotor(int16_t duty_cycle)
+void configureSecondaryRotor(uint8_t duty_cycle)
 {
     temp_var_watch = duty_cycle;
 
-    // checks that duty cycle is between the min and max bounds
-    if(duty_cycle > PWM_MAX_DUTY_CYCLE)
-    {
-        duty_cycle = PWM_MAX_DUTY_CYCLE;
-    }
-    else if (duty_cycle < PWM_MIN_DUTY_CYCLE_TAIL)
-    {
-        duty_cycle = PWM_MIN_DUTY_CYCLE_TAIL;
-    }
-
-    secondary_rotor_duty_cycle = (uint8_t)duty_cycle;
+    secondary_rotor_duty_cycle = duty_cycle;
 
     // period = clock rate / 2 / rotor frequency
     uint32_t period = SysCtlClockGet() / PWM_DIVIDER / PWM_SECONDARY_ROTOR_FREQUENCY;
