@@ -88,22 +88,24 @@ void initYaw(void)
 
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
 
+    GPIOIntDisable(GPIO_PORTC_BASE, GPIO_PIN_4);
+
     GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    GPIODirModeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_DIR_MODE_IN);
 
     GPIOPadConfigSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_STRENGTH_2MA,
                 GPIO_PIN_TYPE_STD_WPU);
-
-    GPIODirModeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_DIR_MODE_IN);
 
     GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_PIN_4, GPIO_FALLING_EDGE);
 
     GPIOIntRegister(GPIO_PORTC_BASE, YawRefIntHandler);
 
-    GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
-
     GPIOIntEnable(GPIO_PORTC_BASE, GPIO_PIN_4);
 
-    IntEnable(INT_GPIOC);
+    // GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    // IntEnable(INT_GPIOC);
 }
 
 int16_t boundYawDeg(int16_t boundingVar)
@@ -171,9 +173,9 @@ int16_t getDesiredYaw(void)
 
 int16_t getYawError(void)
 {
-    int16_t degree_error = getDesiredYaw() - getYaw().degree;
+    int16_t degree_error = getYaw().degree - getDesiredYaw();
 
-    return boundYawDeg(degree_error + 180);
+    return degree_error;
 }
 
 bool getYawRef()

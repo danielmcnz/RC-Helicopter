@@ -60,13 +60,13 @@ void initialize(void)
     initKernel(SAMPLE_RATE_HZ);
     initAltitude();
     initDisplay ();
-    initYaw();
     initRotors();
     initControl(CONTROL_UPDATE_FREQUENCY);
     initUART();
     initReset();
     initButtons();
     initSwitch();
+    initYaw();
 
     // Enable interrupts to the processor.
     IntMasterEnable();
