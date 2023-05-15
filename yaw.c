@@ -14,10 +14,17 @@
 static int16_t yaw;
 static YawPosition yaw_pos;
 
+static bool yawRef = false;
+
 static int16_t desired_yaw = 0;
+
+void YawIntHandler(void);
+void YawRefIntHandler(void);
 
 void initYaw(void)
 {
+    // initialize yaw A and B
+
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
     GPIOPinTypeGPIOInput(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
@@ -26,6 +33,29 @@ void initYaw(void)
 
     GPIOIntRegister(GPIO_PORTB_BASE, YawIntHandler);
     GPIOIntEnable(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+
+    // initialize yaw reference
+
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+
+    GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    GPIOIntTypeSet(GPIO_PORTC_BASE, GPIO_PIN_4, /*GPIO_BOTH_EDGES*/ GPIO_RISING_EDGE);
+
+    GPIOIntRegister(GPIO_PORTC_BASE, YawRefIntHandler);
+    GPIOIntEnable(GPIO_PORTC_BASE, GPIO_PIN_4);
+}
+
+void YawRefIntHandler(void)
+{
+    int signalRef= GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_4);
+
+    if(!signalRef)
+        yawRef = false;
+    else
+        yawRef = true;
+
+    GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_4);
 }
 
 void YawIntHandler(void)
@@ -141,4 +171,9 @@ int16_t getYawError(void)
     }
 
     return degree_error;
+}
+
+bool getYawRef()
+{
+    return yawRef;
 }

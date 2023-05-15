@@ -36,6 +36,7 @@
 #include "uart.h"
 #include "switch.h"
 #include "heliState.h"
+#include "reset.h"
 
 #define SAMPLE_RATE_HZ 250
 
@@ -65,8 +66,7 @@ void initialize(void)
     initControl(CONTROL_UPDATE_FREQUENCY);
     initUART();
     initSwitch();
-
-    startRotors();
+    initReset();
 
     // Enable interrupts to the processor.
     IntMasterEnable();
@@ -103,6 +103,7 @@ void updateInput(void)
     if(checkSwitch() == SWITCH_UP && getHeliState() == LANDED)
     {
         setHeliState(TAKING_OFF);
+        startRotors();
     }
     else if(checkSwitch() == SWITCH_DOWN && getHeliState() == FLYING)
     {

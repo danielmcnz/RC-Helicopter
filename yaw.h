@@ -35,7 +35,7 @@ enum {
 
 void initYaw(void);
 
-void YawIntHandler(void);
+// void YawIntHandler(void);
 
 void updateYaw(void);
 
@@ -46,5 +46,7 @@ void decrementYaw(void);
 
 int16_t getDesiredYaw(void);
 int16_t getYawError(void);
+
+bool getYawRef();
 
 #endif /* YAW_H_ */

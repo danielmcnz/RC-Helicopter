@@ -1,5 +1,8 @@
 #include "control.h"
 
+#include "rotors.h"
+#include "altitude.h"
+#include "yaw.h"
 #include "heliState.h"
 
 #define PID_SCALING_FACTOR 100
@@ -28,6 +31,14 @@ void updateControl(void)
         // go to hover and rotate to known reference point
 
         configureMainRotor(50);
+
+        configureSecondaryRotor(60);
+
+        if(getYawRef())
+        {
+            stopRotors();
+            // configureSecondaryRotor(20);
+        }
     }
     else if(getHeliState() == LANDING)
     {
@@ -40,8 +51,7 @@ void updateControl(void)
     }
     else
     {
-        configureMainRotor(0);
-        configureSecondaryRotor(0);
+        stopRotors();
     }
 }
 
