@@ -86,7 +86,13 @@ void calculateYawControl(void)
 {
     bool direction_clock_wise = true;
 
+    int32_t proporional;
+    int32_t derivative;
+    int32_t intergral;
+    int32_t control_output;
+
     int16_t error = getYawError();
+    
     int8_t duty_cycle;
 
     if (error < 0)
@@ -112,7 +118,7 @@ void calculateYawControl(void)
         error *= -1;
     }
 
-    int32_t proporional = error * YAW_KP;
+    proporional = error * YAW_KP;
     if (proporional > 10 * CONTROL_DIVISOR)
     {
         proporional = 10 * CONTROL_DIVISOR;
@@ -122,7 +128,7 @@ void calculateYawControl(void)
         proporional = -10 * CONTROL_DIVISOR;
     }
 
-    int32_t derivative = (error - previous_yaw_error) * YAW_KD;
+    derivative = (error - previous_yaw_error) * YAW_KD;
     previous_yaw_error = error;
     if (derivative > 10 * CONTROL_DIVISOR)
     {
@@ -133,7 +139,7 @@ void calculateYawControl(void)
         derivative = -10 * CONTROL_DIVISOR;
     }
 
-    int32_t intergral = (sum_yaw_error + error) * YAW_KI;
+    intergral = (sum_yaw_error + error) * YAW_KI;
     if (intergral > 30 * CONTROL_DIVISOR)
     {
         intergral = 30 * CONTROL_DIVISOR;
@@ -143,7 +149,7 @@ void calculateYawControl(void)
         intergral = -30 * CONTROL_DIVISOR;
     }
 
-    int32_t control_output = proporional + derivative + intergral;
+    control_output = proporional + derivative + intergral;
     control_output /= CONTROL_DIVISOR;
 
     if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE_TAIL))
@@ -166,6 +172,6 @@ void calculateYawControl(void)
 
     error_temp_watch = duty_cycle;
 
-    configureSecondaryRotor(40 + duty_cycle);
+    configureSecondaryRotor(duty_cycle);
 
 }
