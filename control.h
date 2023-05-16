@@ -13,7 +13,7 @@
 #include <stdbool.h>
 
 //**********************************************************
-// PID Values set 1000 times there actual value
+// PID Values set 1000 times their actual value
 //**********************************************************
 
 #define ALTITUDE_KP 650 // 0.650

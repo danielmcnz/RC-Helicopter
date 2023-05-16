@@ -117,7 +117,7 @@ void updateInput(void)
     switch_state_t switch_1_input = checkSwitch();
 
     // handles switch input, checking for landing and 
-    // taking off cases for the helicopterz 
+    // taking off cases for the helicopter
     if(switch_1_input == SWITCH_UP && getHeliState() == LANDED)
     {
         setHeliState(TAKING_OFF);
