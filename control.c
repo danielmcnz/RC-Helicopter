@@ -1,6 +1,6 @@
 //**********************************************************
 // File: control.c
-
+//
 // Authors: Freddie Pankhurst   (fpa34)
 //          Daniel McGregor     (dmc270)
 //
@@ -16,7 +16,6 @@
 #include "yaw.h"
 #include "heliState.h"
 
-
 //**********************************************************
 // Constants
 //**********************************************************
@@ -26,6 +25,13 @@
 
 #define INTERGRAL_WINDUP_LIMITS 20
 #define COUNTER_REACHED         400
+
+#define INITIAL_YAW_CONTROL 25000
+#define RISING_ALTITUDE_DIVISOR 100
+#define YAW_CALIBRATION_SWEEP_SPEED 50
+#define YAW_ERROR_TOLERANCE 5
+#define MAX_HOVER_HEIGHT 2
+#define MAX_YAW_DEG 180
 
 //**********************************************************
 // Static Variables
@@ -48,13 +54,13 @@ static bool hover_reached = false;
 //**********************************************************
 // Function declarations
 //**********************************************************
+
 void calculateAltitudeControl(void);
 void calculateYawControl(void);
 void resetLoop(void);
 
-
 //**********************************************************
-// Checks the current state of the helicoper to overide the
+// updateControl: Checks the current state of the helicoper to overide the
 // the desired yaw / altitude to either run the take off / 
 // landing sequence
 //**********************************************************
@@ -74,15 +80,15 @@ void updateControl(void)
         if (!hover_point)
         {   
             // Costantly increase duty cycle by 0.01 until a change in mean altitude of 5 is recorded
-            if (mean_val > (init_val - 5))
+            if (mean_val > (init_val - YAW_ERROR_TOLERANCE))
             {
                 slow_rise++;
-                configureMainRotor(slow_rise/100);
+                configureMainRotor(slow_rise / RISING_ALTITUDE_DIVISOR);
             }
             else
             {
                 hover_reached = true;
-                hover_point = slow_rise/100 - 2;
+                hover_point = slow_rise / RISING_ALTITUDE_DIVISOR - MAX_HOVER_HEIGHT;
                 configureMainRotor(hover_point);
             }
         }
@@ -90,7 +96,7 @@ void updateControl(void)
         if (hover_reached)
         {
             // Configure tail motor to sweep along looking for yawRef 
-            configureSecondaryRotor(50);
+            configureSecondaryRotor(YAW_CALIBRATION_SWEEP_SPEED);
 
             if (getYawRef())
             {
@@ -106,7 +112,7 @@ void updateControl(void)
         resetDesiredYaw();
 
         // +-5 tolerence for updating counter, gives enough time for resetDesiredYaw() to settle
-        if(yaw_error < 5 && yaw_error > -5)
+        if(yaw_error < YAW_ERROR_TOLERANCE && yaw_error > -YAW_ERROR_TOLERANCE)
         {
             count++;
         }
@@ -119,7 +125,7 @@ void updateControl(void)
         {
             setDesiredAltitude(0);
 
-            if(getAltitudePerc() <= 2)
+            if(getAltitudePerc() <= MAX_HOVER_HEIGHT)
             {
                 setHeliState(LANDED);
                 resetLoop();
@@ -130,7 +136,7 @@ void updateControl(void)
 }
 
 //**********************************************************
-// Updates the duty cycle for the main motor using the
+// calculateAltitudeControl: Updates the duty cycle for the main motor using the
 // error returned from the altitude.c file
 //**********************************************************
 void calculateAltitudeControl(void)
@@ -179,7 +185,7 @@ void calculateAltitudeControl(void)
 }
 
 //**********************************************************
-// Updates the duty cycle for the tail motor using the
+// calculateYawControl: Updates the duty cycle for the tail motor using the
 // error returned from the yaw.c file
 //**********************************************************
 void calculateYawControl(void)
@@ -205,9 +211,9 @@ void calculateYawControl(void)
         yaw_error *= -1;
     }
     // If error is greater than 180 it means its quicker to go the other direction and flip the error and direction
-    if (yaw_error > 180)
+    if (yaw_error > MAX_YAW_DEG)
     {
-        yaw_error = 360 - yaw_error;
+        yaw_error = 2 * MAX_YAW_DEG - yaw_error;
 
         if (direction_clock_wise)
         {
@@ -237,7 +243,7 @@ void calculateYawControl(void)
     }
     intergral = sum_yaw_error * YAW_KI;
 
-    control_output = 25000 + proporional + intergral - derivative;
+    control_output = INITIAL_YAW_CONTROL + proporional + intergral - derivative;
     control_output /= CONTROL_DIVISOR;
 
     // Bounds duty_cycle to with the PWM limits for the tail motor
@@ -259,7 +265,7 @@ void calculateYawControl(void)
 }
 
 //**********************************************************
-// When the state changes from landing to landed, reset
+// resetLoop: When the state changes from landing to landed, reset
 // some static variables to allow multiple smooth takeoffd
 //**********************************************************
 void resetLoop(void)

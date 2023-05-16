@@ -1,4 +1,4 @@
-//**
+//**********************************************************
 // File: reset.c
 //
 // Authors: Freddie Pankhurst   (fpa34)
@@ -6,7 +6,7 @@
 //
 // Enables a soft reset for the helicopter through ISR
 //
-//** 
+//**********************************************************
 
 #include "reset.h"
 
@@ -14,18 +14,18 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 
-// **********************************************************
+//**********************************************************
 // resetIntHandler: interrupt handler that resets the program through sysctl
-// **********************************************************
+//**********************************************************
 void resetIntHandler(void)
 {
     SysCtlReset();
     GPIOIntClear(GPIO_PORTA_BASE, GPIO_PIN_6);
 }
 
-// **********************************************************
+//**********************************************************
 // initReset: enables the reset pin and registers the reset interrupt handler
-// **********************************************************
+//**********************************************************
 void initReset()
 {
     // enable the reset pin port

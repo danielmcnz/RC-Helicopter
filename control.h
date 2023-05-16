@@ -1,17 +1,16 @@
-#include <stdint.h>
-#include <stdbool.h>
 //**********************************************************
 // File: control.h
-
+//
 // Authors: Freddie Pankhurst   (fpa34)
 //          Daniel McGregor     (dmc270)
 //
-// Header files for control.c, contains the main
-// updateControl() function, and has the PID values set
-// as 1000 times their actual value
+// Calculates required duty cycle for main and secondary
+// motors from the set errors and PID values.
 //
 //**********************************************************
 
+#include <stdint.h>
+#include <stdbool.h>
 
 //**********************************************************
 // PID Values set 1000 times there actual value
@@ -26,7 +25,7 @@
 #define YAW_KI 9        // 0.009
 
 //**********************************************************
-// Checks the current state of the helicoper to overide the
+// updateControl: Checks the current state of the helicoper to overide the
 // the desired yaw / altitude to either run the take off / 
 // landing sequence
 //**********************************************************

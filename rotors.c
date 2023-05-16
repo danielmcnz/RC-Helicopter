@@ -1,4 +1,4 @@
-//**
+//**********************************************************
 // File: rotors.c
 //
 // Authors: Freddie Pankhurst   (fpa34)
@@ -6,7 +6,7 @@
 //
 // Configures the helicopters main and tails rotors for PWM
 //
-//** 
+//**********************************************************
 
 #include "rotors.h"
 
@@ -18,9 +18,9 @@
 
 #include "heliState.h"
 
-// **********************************************************
+//**********************************************************
 // constants
-// **********************************************************
+//**********************************************************
 
 // PWM clock rate (processor clock / 2)
 #define PWM_DIVIDER_CODE                SYSCTL_PWMDIV_2
@@ -49,9 +49,9 @@
 #define PWM_SECONDARY_ROTOR_OUT         PWM_OUT_5
 #define PWM_SECONDARY_ROTOR_OUTBIT      PWM_OUT_5_BIT
 
-// **********************************************************
+//**********************************************************
 // forward declarations
-// **********************************************************
+//**********************************************************
 
 static void _initMainRotor(void);
 static void _initSecondaryRotor(void);
@@ -62,12 +62,16 @@ static void _startSecondaryRotor(void);
 static void _stopMainRotor(void);
 static void _stopSecondaryRotor(void);
 
+//**********************************************************
+// static variables
+//**********************************************************
+
 static uint8_t main_rotor_duty_cycle = 0;
 static uint8_t secondary_rotor_duty_cycle = 0;
 
-// **********************************************************
+//**********************************************************
 // initRotors: initialize the rotors for PWM output
-// **********************************************************
+//**********************************************************
 void initRotors(void)
 {
     // set PWM clock rate to 10 MHz (80Hz min rate) via pre-scale PWM_DIVIDER_CODE
@@ -77,10 +81,10 @@ void initRotors(void)
     _initSecondaryRotor();
 }
 
-// **********************************************************
+//**********************************************************
 // _initMainRotor: initialize the main rotor for PWM output
 // PWM output initially disabled
-// **********************************************************
+//**********************************************************
 static void _initMainRotor(void)
 {
     // reset PWM and GPIO peripherals
@@ -105,10 +109,10 @@ static void _initMainRotor(void)
     PWMOutputState(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUTBIT, false);
 }
 
-// **********************************************************
+//**********************************************************
 // _initSecondaryRotor: initialize the tail rotor for PWM output
 // PWM output initially disabled
-// **********************************************************
+//**********************************************************
 static void _initSecondaryRotor(void)
 {
     // reset PWM and GPIO peripherals
@@ -133,10 +137,10 @@ static void _initSecondaryRotor(void)
     PWMOutputState(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUTBIT, false);
 }
 
-// **********************************************************
+//**********************************************************
 // configureMainRotor: sets the period and duty cycle for the main rotor, 
 // bounded between the constraints if nessecary
-// **********************************************************
+//**********************************************************
 void configureMainRotor(int32_t duty_cycle)
 {
     // checks that duty cycle is between the min and max bounds
@@ -160,10 +164,10 @@ void configureMainRotor(int32_t duty_cycle)
     PWMPulseWidthSet(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUT, period * main_rotor_duty_cycle / 100);
 }
 
-// **********************************************************
+//**********************************************************
 // configureSecondaryRotor: sets the period and duty cycle for the 
 // secondary rotor, bounded between the constraints if nessecary
-// **********************************************************
+//**********************************************************
 void configureSecondaryRotor(uint8_t duty_cycle)
 {
     secondary_rotor_duty_cycle = duty_cycle;
@@ -178,71 +182,71 @@ void configureSecondaryRotor(uint8_t duty_cycle)
     PWMPulseWidthSet(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUT, period * secondary_rotor_duty_cycle / 100);
 }
 
-// **********************************************************
+//**********************************************************
 // startRotors: enables PWM on the rotors
-// **********************************************************
+//**********************************************************
 void startRotors(void)
 {
     _startMainRotor();
     _startSecondaryRotor();
 }
 
-// **********************************************************
+//**********************************************************
 // _startMainRotor: enables PWM for the main rotor
-// **********************************************************
+//**********************************************************
 static void _startMainRotor(void)
 {
     PWMOutputState(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUTBIT, true);
 }
 
-// **********************************************************
+//**********************************************************
 // _startSecondaryRotor: enables PWM for the tail rotor
-// **********************************************************
+//**********************************************************
 static void _startSecondaryRotor(void)
 {
     PWMOutputState(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUTBIT, true);
 }
 
-// **********************************************************
+//**********************************************************
 // stopRotors: disables PWM on the rotors
-// **********************************************************
+//**********************************************************
 void stopRotors(void)
 {
     _stopMainRotor();
     _stopSecondaryRotor();
 }
 
-// **********************************************************
+//**********************************************************
 // stopRotors: disables PWM on the main rotor and resets the duty cycle
-// **********************************************************
+//**********************************************************
 static void _stopMainRotor(void)
 {
     PWMOutputState(PWM_MAIN_ROTOR_BASE, PWM_MAIN_ROTOR_OUTBIT, false);
     main_rotor_duty_cycle = 0;
 }
 
-// **********************************************************
+//**********************************************************
 // stopRotors: disables PWM on the tail rotor and resets the duty cycle
-// **********************************************************
+//**********************************************************
 static void _stopSecondaryRotor(void)
 {
     PWMOutputState(PWM_SECONDARY_ROTOR_BASE, PWM_SECONDARY_ROTOR_OUTBIT, false);
     secondary_rotor_duty_cycle = 0;
 }
 
-// **********************************************************
+//**********************************************************
 // getMainRotorDutyCycle: returns the duty cycle of the 
 // main rotor of the helicopter
-// **********************************************************
+//**********************************************************
 uint8_t getMainRotorDutyCycle(void)
 {
     return main_rotor_duty_cycle;
 }
 
-// **********************************************************
+//**********************************************************
 // getSecondaryRotorDutyCycle: returns the duty cycle of the 
 // tail rotor of the helicopter
-// **********************************************************
+//**********************************************************
 uint8_t getSecondaryRotorDutyCycle(void)
 {
     return secondary_rotor_duty_cycle;
