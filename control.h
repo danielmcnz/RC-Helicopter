@@ -20,9 +20,9 @@
 #define ALTITUDE_KD 800 // 0.800
 #define ALTITUDE_KI 12  // 0.012
 
-#define YAW_KP 800      // 0.800
-#define YAW_KD 800      // 0.800
-#define YAW_KI 9        // 0.009
+#define YAW_KP      800 // 0.800
+#define YAW_KD      800 // 0.800
+#define YAW_KI      9   // 0.009
 
 //**********************************************************
 // updateControl: Checks the current state of the helicoper to overide the

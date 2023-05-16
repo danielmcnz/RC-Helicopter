@@ -21,17 +21,17 @@
 //**********************************************************
 
 // This is the multiplier of the PID values to remove floating point arithmatic 
-#define CONTROL_DIVISOR         1000
+#define CONTROL_DIVISOR             1000
 
-#define INTERGRAL_WINDUP_LIMITS 20
-#define COUNTER_REACHED         400
+#define INTERGRAL_WINDUP_LIMITS     20
+#define COUNTER_REACHED             400
 
-#define INITIAL_YAW_CONTROL 25000
-#define RISING_ALTITUDE_DIVISOR 100
+#define INITIAL_YAW_CONTROL         25000
+#define RISING_ALTITUDE_DIVISOR     100
 #define YAW_CALIBRATION_SWEEP_SPEED 50
-#define YAW_ERROR_TOLERANCE 5
-#define MAX_HOVER_HEIGHT 2
-#define MAX_YAW_DEG 180
+#define YAW_ERROR_TOLERANCE         5
+#define MAX_HOVER_HEIGHT            2
+#define MAX_YAW_DEG                 180
 
 //**********************************************************
 // Static Variables
