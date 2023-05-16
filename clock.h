@@ -1,14 +1,19 @@
-/*
- * clock.h
- *
- *  Created on: 7/05/2023
- *      Author: dmc270
- */
+//**********************************************************
+// File: clock.h
+//
+// Authors: Freddie Pankhurst   (fpa34)
+//          Daniel McGregor     (dmc270)
+//
+// initalizes the clock for the helicopter
+//
+//**********************************************************
 
 #ifndef CLOCK_H_
 #define CLOCK_H_
 
-
+//**********************************************************
+// initClock: initialize the clock for the helicopter
+//**********************************************************
 inline void initClock (void)
 {
     // Set the clock rate to 20 MHz
