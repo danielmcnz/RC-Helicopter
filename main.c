@@ -42,6 +42,8 @@
 // constants
 //**********************************************************
 
+#define TESTING_ON_A_WORKING_HELI_RIG_FOR_THE_FIRST_TIME_FIVE_MINS_BEFORE_DEMONSTRATION 1
+
 // kernel sample rate
 #define SAMPLE_RATE_HZ 250
 
@@ -146,7 +148,7 @@ int main(void)
 
     kernelPrioritise();
 
-    while (1)
+    while (TESTING_ON_A_WORKING_HELI_RIG_FOR_THE_FIRST_TIME_FIVE_MINS_BEFORE_DEMONSTRATION)
     {
         kernelRun();
     }
