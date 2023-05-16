@@ -1,3 +1,14 @@
+//**********************************************************
+// File: control.c
+
+// Authors: Freddie Pankhurst   (fpa34)
+//          Daniel McGregor     (dmc270)
+//
+// Calculates required duty cycle for main and secondary
+// motors from the set errors and PID values.
+//
+//**********************************************************
+
 #include "control.h"
 
 #include "rotors.h"
@@ -5,53 +16,64 @@
 #include "yaw.h"
 #include "heliState.h"
 
-#define CONTROL_DIVISOR 1000
 
-static uint8_t  control_update_freq;
+//**********************************************************
+// Constants
+//**********************************************************
 
-static int16_t yaw_error = 0;
+// This is the multiplier of the PID values to remove floating point arithmatic 
+#define CONTROL_DIVISOR         1000
 
-static int32_t previous_altitude_error = 0;
-static int32_t sum_altitude_error = 0;
+#define INTERGRAL_WINDUP_LIMITS 20
+#define COUNTER_REACHED         400
 
-static int16_t previous_yaw_error = 0;
-static int32_t sum_yaw_error = 0;
+//**********************************************************
+// Static Variables
+//**********************************************************
 
-//static uint8_t slow_descent = 35;
-static uint32_t slow_rise = 2500;
+static int16_t yaw_error = 0;               // Units; Deg
+
+static int32_t previous_altitude_error = 0; // Units; %
+static int32_t sum_altitude_error = 0;      // Units; 0.01%
+
+static int16_t previous_yaw_error = 0;      // Units; deg
+static int32_t sum_yaw_error = 0;           // Units; 0.01 deg
+
+//  Static variables used to find hovering point of heli
+static uint32_t slow_rise = 2500;           // 0.01 dutycycle increse per tick
 static uint16_t count = 0;
-static uint8_t hover_point;
+static uint8_t hover_point;                 
 static bool hover_reached = false;
 
+//**********************************************************
+// Function declarations
+//**********************************************************
 void calculateAltitudeControl(void);
 void calculateYawControl(void);
-
-void initControl(uint8_t update_freq)
-{
-    control_update_freq = update_freq;
-}
-
-static bool hover_reached_blah;
-static uint32_t mean_val_uuuu;
-static uint16_t count_uu;
-
 void resetLoop(void);
 
+
+//**********************************************************
+// Checks the current state of the helicoper to overide the
+// the desired yaw / altitude to either run the take off / 
+// landing sequence
+//**********************************************************
 void updateControl(void)
 {
+    // Calculates the new duty cycle for each motor
     calculateAltitudeControl();
     calculateYawControl();
 
+    // Checks if the current state of the heli is either taking off or landing
     if(getHeliState() == TAKING_OFF)
     {
+        // Initialise function variables
         uint32_t mean_val = getMeanAltitude();
         int32_t init_val = getInitAltitude();
 
-        mean_val_uuuu = mean_val;
-
-        // go to hover and rotate to known reference point
         if (!hover_point)
-        {
+        {   
+            // Costantly increase duty cycle by 0.01 until a change in mean altitude of 5 is recorded
             if (mean_val > (init_val - 5))
             {
                 slow_rise++;
@@ -65,26 +87,25 @@ void updateControl(void)
             }
         }
 
-        hover_reached_blah = hover_reached;
-
         if (hover_reached)
         {
+            // Configure tail motor to sweep along looking for yawRef 
             configureSecondaryRotor(50);
-//            resetDesiredYaw();
-
 
             if (getYawRef())
             {
+                // Set desired location to the current yawRef as yawRef is not the 0 point
                 resetDesiredYaw();
                 setHeliState(FLYING);
             }
         }
     }
+    // Landing Sequence
     else if(getHeliState() == LANDING)
     {
-        // go to hover and rotate to known reference point, then land
         resetDesiredYaw();
 
+        // +-5 tolerence for updating counter, gives enough time for resetDesiredYaw() to settle
         if(yaw_error < 5 && yaw_error > -5)
         {
             count++;
@@ -94,11 +115,8 @@ void updateControl(void)
             count = 0;
         }
 
-        count_uu = count;
-
-        if (count >= 400)
+        if (count >= COUNTER_REACHED)
         {
-//            configureMainRotor(hover_point-2);
             setDesiredAltitude(0);
 
             if(getAltitudePerc() <= 2)
@@ -109,43 +127,15 @@ void updateControl(void)
             }
         }
     }
-//    else
-//    {
-//        stopRotors();
-//    }
 }
 
-//void calculateAltitudeControl(void)
-//{
-//    int16_t error = getAltitudeError();
-//
-//    int32_t proporional_error = error;
-//
-//    int32_t derivative_error = (error - previous_altitude_error);
-//    previous_altitude_error = error;
-//
-//    int32_t intergral_error_sum = sum_altitude_error + (error);
-//
-//    int32_t control_output = (ALTITUDE_KP * proporional_error) + (ALTITUDE_KD * derivative_error) + (ALTITUDE_KI * intergral_error_sum);
-//    control_output /= CONTROL_DIVISOR;
-//
-//    if ((control_output <= PWM_MAX_DUTY_CYCLE) && (control_output >= PWM_MIN_DUTY_CYCLE))
-//    {
-//        sum_altitude_error = intergral_error_sum;
-//    }
-//
-//    configureMainRotor(50+control_output);
-//}
-
-static int32_t proportional_a = 0;
-static int32_t intergral_a = 0;
-static int32_t derivative_a = 0;
-static int32_t control_output_a = 0;
-static int32_t duty_cycle_a = 0;
-
+//**********************************************************
+// Updates the duty cycle for the main motor using the
+// error returned from the altitude.c file
+//**********************************************************
 void calculateAltitudeControl(void)
 {
-
+    // Initialising function variables for each part of PID control
     int32_t proporional;
     int32_t derivative;
     int32_t intergral;
@@ -153,28 +143,25 @@ void calculateAltitudeControl(void)
 
     int16_t error = getAltitudeError();
 
-    int8_t duty_cycle;
+    int8_t duty_cycle;  // Bound to (PWM_MIN_DUTY_CYCLE->PWM_MAX_DUTY_CYCLE)
 
     proporional = error * ALTITUDE_KP;
 
     derivative = (error - previous_altitude_error) * ALTITUDE_KD;
     previous_altitude_error = error;
 
-    if (error > -20 && error < 20)
+    // Intergral only sums after the other controls have decreased the error
+    // helps to prevent the sum of intergral widning up
+    if (error > -INTERGRAL_WINDUP_LIMITS && error < INTERGRAL_WINDUP_LIMITS)
     {
         sum_altitude_error += error;
     }
     intergral = sum_altitude_error * ALTITUDE_KI;
 
-    // control_output = (slow_rise * CONTROL_DIVISOR) + proporional + intergral - derivative;
     control_output = (hover_point * CONTROL_DIVISOR) + proporional + intergral - derivative;
     control_output /= CONTROL_DIVISOR;
 
-    derivative_a = derivative;
-    intergral_a = intergral;
-    proportional_a = proporional;
-    control_output_a = control_output;
-
+    // Bounds duty_cycle to with the PWM limits
     if(control_output > PWM_MAX_DUTY_CYCLE)
     {
         duty_cycle = PWM_MAX_DUTY_CYCLE;
@@ -188,21 +175,20 @@ void calculateAltitudeControl(void)
         duty_cycle = (uint8_t)control_output;
     }
 
-    duty_cycle_a = duty_cycle;
-
     configureMainRotor(duty_cycle);
 }
 
-static int32_t proportional_w = 0;
-static int32_t intergral_w = 0;
-static int32_t derivative_w = 0;
-static int32_t control_output_w = 0;
-static int32_t duty_cycle_w = 0;
-
+//**********************************************************
+// Updates the duty cycle for the tail motor using the
+// error returned from the yaw.c file
+//**********************************************************
 void calculateYawControl(void)
 {
-    bool direction_clock_wise = true;
+    // Initialises function variables
 
+    bool direction_clock_wise = true;   // Fastest directing to reach desired_yaw
+
+    // Variables for each part of PID control
     int32_t proporional;
     int32_t derivative;
     int32_t intergral;
@@ -212,11 +198,13 @@ void calculateYawControl(void)
     
     int8_t duty_cycle;
 
+    // Inverts direction and error to allow easier testing in next if statement
     if (yaw_error < 0)
     {
         direction_clock_wise = false;
         yaw_error *= -1;
     }
+    // If error is greater than 180 it means its quicker to go the other direction and flip the error and direction
     if (yaw_error > 180)
     {
         yaw_error = 360 - yaw_error;
@@ -230,6 +218,7 @@ void calculateYawControl(void)
             direction_clock_wise = true;
         }
     }
+    // Reflips the error if the -ve error wasnt less the -180
     if (!direction_clock_wise)
     {
         yaw_error *= -1;
@@ -240,20 +229,10 @@ void calculateYawControl(void)
     derivative = (yaw_error - previous_yaw_error) * YAW_KD;
     previous_yaw_error = yaw_error;
 
-    if (yaw_error > -20 && yaw_error < 20)
+    // Intergral only sums after the other controls have decreased the error
+    // helps to prevent the sum of intergral widning up
+    if (yaw_error > -INTERGRAL_WINDUP_LIMITS && yaw_error < INTERGRAL_WINDUP_LIMITS)
     {
-//        if (error > 30)
-//        {
-//            sum_yaw_error += 30;
-//        }
-//        else if (error < -30)
-//        {
-//            sum_yaw_error -= 30;
-//        }
-//        else
-//        {
-//            sum_yaw_error += error;
-//        }
         sum_yaw_error += yaw_error;
     }
     intergral = sum_yaw_error * YAW_KI;
@@ -261,11 +240,7 @@ void calculateYawControl(void)
     control_output = 25000 + proporional + intergral - derivative;
     control_output /= CONTROL_DIVISOR;
 
-    derivative_w = derivative;
-    intergral_w = intergral;
-    proportional_w = proporional;
-    control_output_w = control_output;
-
+    // Bounds duty_cycle to with the PWM limits for the tail motor
     if(control_output > PWM_MAX_DUTY_CYCLE)
     {
         duty_cycle = PWM_MAX_DUTY_CYCLE;
@@ -279,12 +254,14 @@ void calculateYawControl(void)
         duty_cycle = (uint8_t)control_output;
     }
 
-    duty_cycle_w = duty_cycle;
-
     configureSecondaryRotor(duty_cycle);
 
 }
 
+//**********************************************************
+// When the state changes from landing to landed, reset
+// some static variables to allow multiple smooth takeoffd
+//**********************************************************
 void resetLoop(void)
 {
     previous_altitude_error = 0;
