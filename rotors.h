@@ -1,9 +1,12 @@
-/*
- * rotors.h
- *
- *  Created on: 13/05/2023
- *      Author: dmc270
- */
+//**
+// File: rotors.h
+//
+// Authors: Freddie Pankhurst   (fpa34)
+//          Daniel McGregor     (dmc270)
+//
+// Configures the helicopters main and tails rotors for PWM
+//
+//** 
 
 #ifndef ROTORS_H_
 #define ROTORS_H_
@@ -11,6 +14,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// divider for the rotor pulse width period
 #define PWM_DIVIDER                         2
 
 // default duty cycle values for initialization
@@ -18,27 +22,48 @@
 #define DEFAULT_SECONDARY_ROTOR_DUTY_CYCLE  25
 
 // duty cycle bounds for rotor PWM
-#define PWM_MAX_DUTY_CYCLE                  70 // Told to put as 70 in email as heli will turn off otherwise <----------------------------------------------------------------
-#define PWM_MIN_DUTY_CYCLE                  10 // Just cause doesnt effect anything till ~50
+#define PWM_MAX_DUTY_CYCLE                  70
+#define PWM_MIN_DUTY_CYCLE                  20
 #define PWM_MIN_DUTY_CYCLE_TAIL             2
 
-// initialize the rotors for PWM output
+// **********************************************************
+// initRotors: initialize the rotors for PWM output
+// **********************************************************
 void initRotors(void);
 
-// sets the period and duty cycle for the main rotor, bounded between the constraints if nessecary
+// **********************************************************
+// configureMainRotor: sets the period and duty cycle for the main rotor, 
+// bounded between the constraints if nessecary
+// **********************************************************
 void configureMainRotor(int32_t duty_cycle);
 
-// sets the period and duty cycle for the secondary rotor, bounded between the constraints if nessecary
+// **********************************************************
+// configureSecondaryRotor: sets the period and duty cycle for the 
+// secondary rotor, bounded between the constraints if nessecary
+// **********************************************************
 void configureSecondaryRotor(uint8_t duty_cycle);
 
-// enables PWM on the rotors
+// **********************************************************
+// startRotors: enables PWM on the rotors
+// **********************************************************
 void startRotors(void);
 
-// disables PWM on the rotors
+// **********************************************************
+// stopRotors: disables PWM on the rotors
+// **********************************************************
 void stopRotors(void);
 
+
+// **********************************************************
+// getMainRotorDutyCycle: returns the duty cycle of the 
+// main rotor of the helicopter
+// **********************************************************
 uint8_t getMainRotorDutyCycle(void);
 
+// **********************************************************
+// getSecondaryRotorDutyCycle: returns the duty cycle of the 
+// tail rotor of the helicopter
+// **********************************************************
 uint8_t getSecondaryRotorDutyCycle(void);
 
 #endif /* ROTORS_H_ */
