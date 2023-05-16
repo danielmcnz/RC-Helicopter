@@ -1,9 +1,13 @@
-/*
- * Altitude.cpp
- *
- *  Created on: 3/05/2023
- *      Author: dmc270
- */
+//**********************************************************
+// File: altitude.c
+//
+// Authors: Freddie Pankhurst   (fpa34)
+//          Daniel McGregor     (dmc270)
+//
+// Handles reading and calculating altitude and determining
+// the height of the helicopter
+//
+//**********************************************************
 
 #include "altitude.h"
 
@@ -11,39 +15,67 @@
 #include "driverlib/adc.h"
 #include "driverlib/sysctl.h"
 
-static circBuf_t g_inBuffer; // Buffer of size BUF_SIZE integers (sample values)
-static int32_t buffer_sum; // sum of the values in the circular buffer
-static int32_t init_mean_altitude; // initial altitude value
-static uint32_t mean_altitude;
-static int16_t percentage_val = 0;
+//**********************************************************
+// constants
+//**********************************************************
+
+#define ALTITUDE_VOLTAGE_RANGE 1000
+#define PERCENT 100
+#define ALTITUDE_INCREMENT 10
+
+// altitude constraints
+#define MAX_ALTITUDE 100
+#define MIN_ALTITUDE 0
+
+// buffer size of the circular buffer used to read altitude values
+#define BUF_SIZE 10
+
+// used for the delay period before filling the initial altitude circular buffer
+#define DELAY_DIVIDER 6
+
+//**********************************************************
+// static variables
+//**********************************************************
+
+// Buffer of size BUF_SIZE integers (sample values)
+static circBuf_t g_inBuffer; 
+
+// sum of the values in the circular buffer
+static int32_t buffer_sum; 
+
+// initial mean altitude, averaged over 10 intital altitude samples
+static int32_t init_mean_altitude; 
+
+// mean altitude averaged over the last 10 alitude readings
+static uint32_t mean_altitude; 
+
+// altitude as a percentage
+static int16_t altitude_percentage = 0;
+
+// the altitude the helicopter should move to or currently be at
 static int16_t desired_altitude = 0;
-static int16_t init_altitude = 0;
 
 //*****************************************************************************
-//
-// The handler for the ADC conversion complete interrupt.
-// Writes to the circular buffer.
-//
+// altitudeIntHandler: handler for the ADC conversion complete interrupt for altitude,
+// writes to the circular buffer
 //*****************************************************************************
 void altitudeIntHandler(void)
 {
     uint32_t ulValue;
 
-    //
-    // Get the single sample from ADC0.  ADC_BASE is defined in
-    // inc/hw_memmap.h
+    // Get the single sample from ADC0.
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);
-    //
+
     // Place it in the circular buffer (advancing write index)
     writeCircBuf (&g_inBuffer, ulValue);
-    //
+
     // Clean up, clearing the interrupt
     ADCIntClear(ADC0_BASE, 3);
-
-    static int16_t adc_int = 0;
-    adc_int++;
 }
 
+//**********************************************************
+// _initADC: initialize the ADC to read the altitude from the helicopter
+//**********************************************************
 void _initADC(void)
 {
     //
@@ -80,13 +112,16 @@ void _initADC(void)
     ADCIntEnable(ADC0_BASE, 3);
 }
 
+//**********************************************************
+// initAltitude: initialize the rotors for PWM output
+//**********************************************************
 void initAltitude(void)
 {
     _initADC();
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
 
-    SysCtlDelay(10 * (SysCtlClockGet() / 60));
+    SysCtlDelay((SysCtlClockGet() / DELAY_DIVIDER));
 
     // reads the sum of the buffer in the first pass after short initial delay
     buffer_sum = 0;
@@ -97,6 +132,10 @@ void initAltitude(void)
     init_mean_altitude = (2 * buffer_sum + BUF_SIZE) / 2 / BUF_SIZE; // mean altitude
 }
 
+// **********************************************************
+// updateAltitude: updates the mean altitude value by reading the ADC
+// and calculating it as a percentage
+// **********************************************************
 void updateAltitude(void)
 {
     //
@@ -113,45 +152,67 @@ void updateAltitude(void)
 
     if (init_mean_altitude >= mean_altitude)
     {
-        percentage_val =  (PERCENT * (int16_t)(init_mean_altitude - mean_altitude)) / ALTITUDE_VOLTAGE_RANGE;
+        altitude_percentage =  (PERCENT * (int16_t)(init_mean_altitude - mean_altitude)) / ALTITUDE_VOLTAGE_RANGE;
     }
     else
     {
-        percentage_val = - (PERCENT * (int16_t)(mean_altitude - init_mean_altitude)) / ALTITUDE_VOLTAGE_RANGE;
+        altitude_percentage = - (PERCENT * (int16_t)(mean_altitude - init_mean_altitude)) / ALTITUDE_VOLTAGE_RANGE;
     }
 }
 
+//**********************************************************
+// setInitAltitude: resets the initial mean altitude to the given value
+//**********************************************************
 void setInitAltitude(uint32_t mean_altitude)
 {
     init_mean_altitude = mean_altitude;
 }
 
-int16_t getAltitudePerc(void)
+//**********************************************************
+// setDesiredAltitude: sets the desired altitude to the given parameter
+//**********************************************************
+void setDesiredAltitude(int16_t desired)
 {
-    return percentage_val;
+    desired_altitude = desired;
 }
 
+//**********************************************************
+// getAltitudePerc: returns the altitude as a percentage
+//**********************************************************
+int16_t getAltitudePerc(void)
+{
+    return altitude_percentage;
+}
 
+//**********************************************************
+// getMeanAltitude: returns the mean altitude
+//**********************************************************
 uint32_t getMeanAltitude(void)
 {
     return mean_altitude;
 }
 
+//**********************************************************
+// incrementAltitude: manually increases the desired altitude
+//**********************************************************
 void incrementAltitude(void)
 {
     desired_altitude += ALTITUDE_INCREMENT;
-    if (desired_altitude > 100)
+    if (desired_altitude > MAX_ALTITUDE)
     {
-        desired_altitude = 100;
+        desired_altitude = MAX_ALTITUDE;
     }
 }
 
+//**********************************************************
+// decrementAltitude: manually decreases the desired altitude
+//**********************************************************
 void decrementAltitude(void)
 {
 
-    if ((desired_altitude - ALTITUDE_INCREMENT) < 0)
+    if ((desired_altitude - ALTITUDE_INCREMENT) < MIN_ALTITUDE)
     {
-        desired_altitude = 0;
+        desired_altitude = MIN_ALTITUDE;
     }
     else
     {
@@ -159,22 +220,27 @@ void decrementAltitude(void)
     }
 }
 
+//**********************************************************
+// getDesiredAltitude: returns the desired altitude
+//**********************************************************
 uint16_t getDesiredAltitude(void)
 {
     return desired_altitude;
 }
 
+//**********************************************************
+// getAltitudeError: returns the altitude error 
+// (desired - current) as a percentage
+//**********************************************************
 int16_t getAltitudeError(void)
 {
     return getDesiredAltitude() - getAltitudePerc();
 }
 
+//**********************************************************
+// getInitAltitude: returns the initial mean altitude
+//**********************************************************
 int32_t getInitAltitude(void)
 {
     return init_mean_altitude;
-}
-
-void setDesiredAltitude(int16_t desired)
-{
-    desired_altitude = desired;
 }
