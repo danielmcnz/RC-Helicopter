@@ -1,13 +1,12 @@
-//*****************************************************************************
+//**********************************************************
+// File: main.c
 //
-// ADCdemo1.c - Simple interrupt driven program which samples with AIN0
+// Authors: Freddie Pankhurst   (fpa34)
+//          Daniel McGregor     (dmc270)
 //
-// Author:  P.J. Bones  UCECE
-// Last modified:   8.2.2018
+// main function for helicopter program
 //
-//*****************************************************************************
-// Based on the 'convert' series from 2016
-//*****************************************************************************
+//**********************************************************
 
 #include <stdint.h>
 #include <stdbool.h>
