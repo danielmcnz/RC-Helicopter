@@ -1,9 +1,13 @@
-/*
- * uart.c
- *
- *  Created on: 13/05/2023
- *      Author: dmc270
- */
+//**********************************************************
+// File: uart.c
+//
+// Authors: Freddie Pankhurst   (fpa34)
+//          Daniel McGregor     (dmc270)
+//
+// Handles UART output and displays a status of the helicopters
+// position and state
+//
+//**********************************************************
 
 #include "uart.h"
 
@@ -18,11 +22,24 @@
 #include "heliState.h"
 #include "rotors.h"
 
+//**********************************************************
+// constants
+//**********************************************************
+
 #define UART_BASE               UART0_BASE
 #define DATA_MASK_EIGHT_BITS    UART_CONFIG_WLEN_8
 #define STOP_BITS               UART_CONFIG_STOP_ONE
 #define PARITY                  UART_CONFIG_PAR_NONE
 
+// max line length when displaying uart output
+#define MAX_STR_LEN 28
+
+// baud rate for the uart console output
+#define BAUD_RATE   9600
+
+//**********************************************************
+// initUART: initialize UART (1 stop bit, no parity, 8-bit data, 9600 baud rate)
+//**********************************************************
 void initUART(void)
 {
     // enable UART0
@@ -40,6 +57,10 @@ void initUART(void)
     UARTEnable(UART_BASE);
 }
 
+//**********************************************************
+// sendStatus: displays the status of the helicopter position
+// and state through uart
+//**********************************************************
 void sendStatus(void)
 {
     char str[MAX_STR_LEN];
@@ -63,10 +84,15 @@ void sendStatus(void)
     sendStringUART("------------\r\n\0");
 }
 
+//**********************************************************
+// sendStringUART: helper function to print a string through uart
+//**********************************************************
 void sendStringUART(char *str)
 {
+    // loop through the given string to retreive each character
     while(*str != '\0')
     {
+        // send each char through UART
         UARTCharPut(UART_BASE, *str);
 
         ++str;
