@@ -38,8 +38,14 @@
 #include "heliState.h"
 #include "reset.h"
 
+//**********************************************************
+// constants
+//**********************************************************
+
+// kernel sample rate
 #define SAMPLE_RATE_HZ 250
 
+// kernel update frequency for each task
 #define ALTITUDE_UPDATE_FREQUENCY 150
 #define YAW_UPDATE_FREQUENCY 150
 #define INPUT_UPDATE_FREQUENCY 50
@@ -47,6 +53,7 @@
 #define CONTROL_UPDATE_FREQUENCY 20
 #define UART_UPDATE_FREQUENCY 4
 
+// kernel priority for each task
 #define ALTITUDE_PRIORITY 1
 #define YAW_PRIORITY 1
 #define INPUT_PRIORITY 2
@@ -54,6 +61,10 @@
 #define CONTROL_PRIORITY 0
 #define UART_PRIORITY 3
 
+//**********************************************************
+// initialize: initialization for all the background tasks
+// and enables interrupts
+//**********************************************************
 void initialize(void)
 {
     initClock ();
@@ -72,11 +83,17 @@ void initialize(void)
     IntMasterEnable();
 }
 
+//**********************************************************
+// updateInput: handles button and switch input checks,
+// controlling altitude and yaw of the helicopter and helicopter state
+//**********************************************************
 void updateInput(void)
 {
     updateButtons();
     updateSwitch();
 
+    // checks for button input, moving the helicopter if so,
+    // provided the helicopter is in the flying state
     if(getHeliState() == FLYING)
     {
         if(checkButton(UP) == PUSHED)
@@ -99,6 +116,8 @@ void updateInput(void)
 
     switch_state_t switch_1_input = checkSwitch();
 
+    // handles switch input, checking for landing and 
+    // taking off cases for the helicopterz 
     if(switch_1_input == SWITCH_UP && getHeliState() == LANDED)
     {
         setHeliState(TAKING_OFF);
@@ -110,6 +129,10 @@ void updateInput(void)
     }
 }
 
+//**********************************************************
+// main: main loop of program, kernel setup registering all the
+// background tasks and running them for the duration of the program
+//**********************************************************
 int main(void)
 {
     initialize();
