@@ -1,9 +1,12 @@
-/*
- * kernel.c
- *
- *  Created on: 7/05/2023
- *      Author: dmc270
- */
+//**********************************************************
+// File: kernel.c
+//
+// Authors: Freddie Pankhurst   (fpa34)
+//          Daniel McGregor     (dmc270)
+//
+// handles all the background tasks using a scheduler
+//
+//**********************************************************
 
 #include "kernel.h"
 
@@ -14,6 +17,16 @@
 #include "driverlib/systick.h"
 #include "driverlib/adc.h"
 
+//**********************************************************
+// constants
+//**********************************************************
+
+#define MAX_TASKS 10
+
+//**********************************************************
+// static variables
+//**********************************************************
+
 static uint32_t g_ulSampCnt;    // Counter for the interrupts
 
 static uint32_t kernel_frequency;
@@ -21,15 +34,20 @@ static uint32_t kernel_frequency;
 static task_t* tasks;
 static uint8_t n_tasks;
 
+//**********************************************************
+// kernelSysTickIntHandler: interrupt handler for enabling ADC trigger 
+// and counting interrupts
+//**********************************************************
 void kernelSysTickIntHandler(void)
 {
     ADCProcessorTrigger(ADC0_BASE, 3);
     g_ulSampCnt++;
-
-    static int16_t sys_tick_int = 0;
-    sys_tick_int++;
 }
 
+//**********************************************************
+// initKernel: initializes the kernel, setting up systick and 
+// allocating memory for background tasks
+//**********************************************************
 void initKernel(uint32_t frequency)
 {
     kernel_frequency = frequency;
@@ -47,13 +65,18 @@ void initKernel(uint32_t frequency)
 
     n_tasks = 0;
 
+    // allocate memory for the kernel tasks
     tasks = malloc(sizeof(task_t) * MAX_TASKS);
 }
 
-
-
+//**********************************************************
+// kernelRegisterTask: creates a new task for the kernel to
+// call when required
+//**********************************************************
 void kernelRegisterTask(uint16_t ticks, void (*run)(void), uint8_t priority)
 {
+    // assigns a new task to the kernel if there arent already too many tasks
+    // currently running in the kernel
     if(n_tasks < MAX_TASKS)
     {
         task_t task;
@@ -68,24 +91,36 @@ void kernelRegisterTask(uint16_t ticks, void (*run)(void), uint8_t priority)
     }
 }
 
+//**********************************************************
+// kernelRun: loops through all the tasks and runs them when
+// the task tick reaches zero and resets the tick period
+//**********************************************************
 void kernelRun(void)
 {
     uint8_t task;
     for(task=0;task < n_tasks; ++task)
     {
+        // calls the task function to run when the counted ticks reaches zero
+        // for that task
          if(tasks[task].cur_tick <= 0)
          {
             tasks[task].run();
-
-             tasks[task].cur_tick = tasks[task].ticks;
+            
+            // resets the ticks when reaching zero
+            tasks[task].cur_tick = tasks[task].ticks;
          }
          else
          {
-             tasks[task].cur_tick--;
+            // decrements the time till the next call for the specific task
+            tasks[task].cur_tick--;
          }
     }
 }
 
+//**********************************************************
+// compare: helper function for prioritising kernel tasks,
+// used for qsort
+//**********************************************************
 int compare(const void* a, const void* b)
 {
     if(((task_t*)a)->priority == ((task_t*)b)->priority) return 0;
@@ -93,6 +128,9 @@ int compare(const void* a, const void* b)
     else return 1;
 }
 
+//**********************************************************
+// kernelPrioritise: sorts the kernel tasks from highest (0) to lowest (3) priority
+//**********************************************************
 void kernelPrioritise(void)
 {
     qsort(tasks, n_tasks, sizeof(task_t), compare);
